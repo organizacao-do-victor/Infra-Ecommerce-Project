@@ -1,4 +1,5 @@
 import React from 'react'
+import './index.style.js';
 
 
 export default function WelcomeScreen() {
@@ -9,10 +10,9 @@ export default function WelcomeScreen() {
             <div className='content'>
                 <span>Login</span>
                 <span className='subtitle'>Please enter you Login and your Password</span>
-
-                <div className='content-inputs'>
-                    <input placeholder='E-mail' type={'text'} />
-                    <input placeholder='Password' type={'text'} />
+                <div className='inputs'>
+                    <input className='input-text1' placeholder='E-mail' type={'text'} />
+                    <input className='input-text2' placeholder='Password' type={'text'} />
                     <span className='fgt-psw'>Forgot password?</span>
                 </div>
                 <div className='button'>
