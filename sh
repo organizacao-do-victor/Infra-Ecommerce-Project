@@ -4,7 +4,7 @@ cd  && \
 #Waits for confirmation, -auto-approve removes it
 terraform apply && \
 #save outputs to file
-terraform output >> ../output
+terraform output >> ../output && \
 #cds out
 #cd .. && \
 
