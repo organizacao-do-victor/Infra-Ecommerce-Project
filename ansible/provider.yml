@@ -1,0 +1,32 @@
+- hosts: all
+
+  tasks:
+  - name: "fazendo update"
+    shell: "sudo apt update"
+
+  - name: "instalando o apache"
+    shell: "sudo apt install apache2 -y"
+
+  - name: "instalando o curl"
+    shell: "sudo apt install curl -y"
+
+ # - name: "copiando o arquivo de instalação do aws cli"
+ #   shell: 'curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip"'
+
+ # - name: "instalando o unzip"
+ #   shell: "sudo apt install unzip"
+    
+ # - name: "extraindo o arquivo"
+ #   shell: "unzip awscliv2.zip"
+
+ # - name: "instalando o aws cli"
+ #   shell: "sudo ./aws/install"     
+
+  #- name: "copiando o index.html"
+  #  shell: "aws s3 cp s3://meubucket1234567/player /home/ubuntu"
+
+  - name: "movendo para servidor apache"
+    shell: "sudo mv player /var/www/html"
+
+  - name: "reiniciando o servidor apache"
+    shell: "sudo systemctl restart apache2"  
