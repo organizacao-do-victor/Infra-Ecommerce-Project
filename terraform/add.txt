@@ -1,3 +1,0 @@
-https://registry.terraform.io/modules/terraform-aws-modules/s3-bucket/aws/latest
-
- s3_bucket_bucket_regional_domain_name
