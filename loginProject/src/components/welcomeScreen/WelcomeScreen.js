@@ -1,26 +1,28 @@
 import React from 'react'
-import './index.style.js';
+import './index.style.css';
 
 
 export default function WelcomeScreen() {
-  return (
-    <>
-    <h1>Welcome Screen</h1>
-    <div className='form'>
-            <div className='content'>
-                <span>Login</span>
-                <span className='subtitle'>Please enter you Login and your Password</span>
-                <div className='inputs'>
-                    <input className='input-text1' placeholder='E-mail' type={'text'} />
-                    <input className='input-text2' placeholder='Password' type={'text'} />
-                    <span className='fgt-psw'>Forgot password?</span>
-                </div>
-                <div className='button'>
-                    <span className='btn-text'>Entrar</span>
-                </div>
-                <span className='fgt-psw'>Not a member yet? <span className='register'>Register!</span></span>
+    return (
+        <div className="login">
+          <h1>Sign In</h1>
+          <form>
+            <div className="form-control">
+              <input type="text" required></input>
+              <label>Username</label>
             </div>
+            <div className="form-control">
+              <input type="password" required></input>
+              <label>Password</label>
+            </div>
+            <button className="btn" href="/">
+              SUBMIT
+            </button>
+            <p className="text">
+              Don't have an account?
+              <a href="/"> Create account</a>
+            </p>
+          </form>
         </div>
-    </>
-  )
+      )
 }
