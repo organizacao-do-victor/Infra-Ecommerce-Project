@@ -1,0 +1,2 @@
+alterar o ip da EC2- no HOSTS
+ansible-playbook -i hosts inventory.yml -u ubuntu --private-key caminho-da-chave/ecommerce-key
