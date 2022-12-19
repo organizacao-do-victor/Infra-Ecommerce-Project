@@ -1,8 +1,8 @@
 import React from 'react'
 import './index.style.css';
+import { Link } from 'react-router-dom';
 
-
-export default function WelcomeScreen() {
+export default function LoginScreen() {
     return (
         <div className="login">
           <h1>Sign In</h1>
@@ -18,9 +18,11 @@ export default function WelcomeScreen() {
             <button className="btn" href="/">
               SUBMIT
             </button>
+            <Link to="/products" className="btn" >SUBMIT</Link>
             <p className="text">
               Don't have an account?
               <a href="/"> Create account</a>
+              <Link to="/products">Sob</Link>
             </p>
           </form>
         </div>

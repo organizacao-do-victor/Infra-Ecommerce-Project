@@ -1,10 +1,11 @@
 import './App.css';
-import WelcomeScreen from './components/welcomeScreen/WelcomeScreen';
+import Routes from './components/Routes/Routes'
+
 
 function App() {
   return (
     <div className="App">
-      <WelcomeScreen/>
+      <Routes/>
     </div>
   );
 }
