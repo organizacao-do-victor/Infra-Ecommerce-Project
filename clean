@@ -1,3 +1,0 @@
-sudo docker rm -f $(sudo docker ps -qa)
-sudo docker network rm $(sudo docker network ls -q)
-#sudo docker volume prune -f
