@@ -1,6 +1,0 @@
-cd main && \
-terraform apply && terraform output > ../output \
-&& cd .. && \
-python3 format.py && \
-python3 dbinit.py && \
-(python3 up.py upl/* & ansible-playbook playbook.yaml -i hosts)
