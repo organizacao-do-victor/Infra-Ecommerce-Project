@@ -1,10 +1,12 @@
 import React from 'react'
-import './index.style.css';
+import './Styles/Login.style.css';
 import { Link } from 'react-router-dom';
+
 
 export default function LoginScreen() {
     return (
-        <div className="login">
+    <>
+      <div className="login">
           <h1>Sign In</h1>
           <form>
             <div className="form-control">
@@ -16,15 +18,15 @@ export default function LoginScreen() {
               <label>Password</label>
             </div>
             <button className="btn" href="/">
-              SUBMIT
+              <Link to="/products"className='btn'> SUBMIT</Link>
             </button>
-            <Link to="/products" className="btn" >SUBMIT</Link>
             <p className="text">
               Don't have an account?
-              <a href="/"> Create account</a>
-              <Link to="/products">Sob</Link>
+              <a href="/">  <Link to="/products"> Create Account</Link></a>
             </p>
           </form>
         </div>
-      )
+ 
+    </>    
+  )
 }
