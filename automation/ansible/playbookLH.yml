@@ -1,94 +1,100 @@
 - hosts: all
-  become: yes
 
   tasks:
-    - name: Install aptitude
+    - name: Update apt
+      become: yes
       apt:
-        name: aptitude
-        state: latest
         update_cache: true
 
-    - name: Install required system packages
-      apt:
-        pkg:
-          - apt-transport-https
-          - ca-certificates
-          - curl
-          - software-properties-common
-          - python3-pip
-          - virtualenv
-          - python3-setuptools
-        state: latest
-        update_cache: true
+#    - name: Install aptitude
+#      apt:
+#        name: aptitude
+#        state: latest
+#        update_cache: true
 
-    - name: Add Docker GPG apt Key
-      apt_key:
-        url: https://download.docker.com/linux/ubuntu/gpg
-        state: present
+#    - name: Install required system packages
+#      become: yes
+#      apt:
+#        pkg:
+#          - apt-transport-https
+#          - ca-certificates
+#          - curl
+#          - software-properties-common
+#          - python3-pip
+#          - virtualenv
+#          - python3-setuptools
+#          - git
+#        state: latest
 
-    - name: Add Docker Repository
-      apt_repository:
-        repo: deb https://download.docker.com/linux/ubuntu focal stable
-        state: present
+#    - name: Add Docker GPG apt Key
+#      apt_key:
+#        url: https://download.docker.com/linux/ubuntu/gpg
+#        state: present
 
-    - name: Update apt and install docker-ce
-      apt:
-        name: docker-ce
-        state: latest
-        update_cache: true
+#    - name: Add Docker Repository
+#      apt_repository:
+#        repo: deb https://download.docker.com/linux/ubuntu focal stable
+#        state: present
 
-    - name: Install Docker Module for Python
-      pip:
-        name: docker
+#    - name: Update apt and install docker-ce
+#      apt:
+#        name: docker-ce
+#        state: latest
 
-    - name: Install npm
-      apt:
-        name: npm
-        state: latest
-        update_cache: true
+#    - name: Install Docker Module for Python
+#      pip:
+#        name: docker
 
-    - name: Clone a ecommerce
-      git:
-        repo: https://github.com/organizacao-do-victor/Infra-Ecommerce-Project.git
-        dest: /home/ubuntu/ecommerce
-        clone: yes
-        update: yes
+#    - name: Install npm
+#      apt:
+#        name: npm
+#        state: latest
+
+#    - name: Clone a ecommerce
+#      git:
+#        repo: https://github.com/organizacao-do-victor/Infra-Ecommerce-Project.git
+#        dest: /home/{{ ansible_user }}/ecommerce
+#        clone: yes
+#        update: yes
 
     - name: Clone a pkeys
       git:
         repo: https://github.com/organizacao-do-victor/pkeys.git
-        dest: /home/ubuntu/pkeys
+        dest: /home/{{ ansible_user }}/pkeys
+        force: true
+        depth: 1
         clone: yes
         update: yes
-
-
-    - name: removing file
-      shell: "rm temp.txt"
-      args:
-       chdir: /home/ubuntu/pkeys
 
     - name: grouping pubkeys into temp.txt
       shell: "cat *.pub >> temp.txt"
       args:
-       chdir: /home/ubuntu/pkeys
+       chdir: /home/{{ ansible_user }}/pkeys
 
     - name: copying keys into authorized keys
-      shell: "cat /home/ubuntu/pkeys/temp.txt >> /home/ubuntu/.ssh/authorized_keys"
+      become: yes
+      shell: "cat /home/{{ ansible_user }}/pkeys/temp.txt >> /home/{{ ansible_user }}/.ssh/authorized_keys"
 
-    - name: "updating system..."
-      apt:
-        update_cache: yes
-        force_apt_get: yes
-        update_cache: true
+#    - name: "updating system..."
+#      apt:
+#        force_apt_get: yes
 
-    - name: "installing ansible requirements..."
-      apt:    
-        name: software-properties-common
-        state: latest
-        update_cache: true
+#    - name: "installing ansible requirements..."
+#      apt:    
+#        name: software-properties-common
+#        state: latest
 
     - name: "installing ansible..."
+      become: yes
       apt:    
         name: ansible
         state: latest
-        update_cache: true
+
+    - name: Clone a ecommerce
+      git:
+        repo: https://github.com/organizacao-do-victor/Infra-Ecommerce-Project.git
+        dest: /home/{{ ansible_user }}/ecomerce
+        force: true
+        depth: 1
+        clone: yes
+        update: yes

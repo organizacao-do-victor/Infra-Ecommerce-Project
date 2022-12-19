@@ -15,6 +15,3 @@ resource "aws_s3_bucket_public_access_block" "ecommerce" {
   restrict_public_buckets = false
 }
 
-output "Bucket-name" {
-  value = aws_s3_bucket.ecommerce.bucket_domain_name
-}

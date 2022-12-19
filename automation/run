@@ -1,19 +1,16 @@
-#cd back to root folder if in automation folder
-if [ "$(basename $(pwd))" = "automation" ];then
-	cd ..
-fi
-
 #cd to terraform folder
 cd terraform && \
+terraform init && \
 #Waits for confirmation, -auto-approve removes it
 terraform apply && \
 #save outputs to file
-terraform output >> ../output && \
+terraform output > ../output && \
 #cds out
 cd .. && \
 
 #format ansible hosts and other files from output
-python3 automation/format.py 
-#&& \
+python3 format.py && \
 
-#ansible-playbook playbook.yaml -i hosts
+#ansible
+cd ansible && \
+ansible-playbook playbookLH.yml -i ansibleHost --private-key ../terraform/ecommerce-key

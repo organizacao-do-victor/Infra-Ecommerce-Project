@@ -61,8 +61,4 @@ resource "aws_instance" "ansible-project" {
     Project = "ecommerce-project"
   }
 }
-output "PublicIP" {
-  value = ["front app: ", aws_instance.front-app-project.public_ip, "grafana: ", aws_instance.grafana-project.public_ip,
-    "databases: ", aws_instance.databases-project.public_ip, "ansible: ", aws_instance.ansible-project.public_ip
-  ]
-}
+
