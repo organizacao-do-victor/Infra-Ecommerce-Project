@@ -1,2 +1,0 @@
-terraform init
-terraform appy -auto-approve
