@@ -1,5 +1,9 @@
 resource "aws_s3_bucket" "ecommerce" {
-  bucket = "ecommerce-as4d4ewf4wsaxasf5ergsax4er62d"
+  bucket = "ecommerce-${random_uuid.uuid.result}"
+}
+
+resource "random_uuid" "uuid" {
+
 }
 
 resource "aws_s3_bucket_public_access_block" "ecommerce" {
@@ -9,4 +13,8 @@ resource "aws_s3_bucket_public_access_block" "ecommerce" {
   block_public_policy     = false
   ignore_public_acls      = false
   restrict_public_buckets = false
+}
+
+output "Bucket-name" {
+  value = aws_s3_bucket.ecommerce.bucket_domain_name
 }
