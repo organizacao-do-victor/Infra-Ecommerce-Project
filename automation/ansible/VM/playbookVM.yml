@@ -28,7 +28,7 @@
     ################
     - name: copying db files
       copy:
-        src: /home/{{ ansible_user }}/ecomerce/banco
+        src: /home/{{ ansible_user }}/ecommerce/banco
         dest: /home/{{ ansible_user }}
       when: "'db' in group_names"
 
