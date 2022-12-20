@@ -1,0 +1,52 @@
+- name: docker installation
+  strategy: free
+  hosts: all
+  tasks:    
+    - name: Update apt
+      become: yes
+      apt:
+        update_cache: true
+
+    - name: copying file with the pub keys
+      copy:
+        src: /home/{{ ansible_user }}/pkeys/temp.txt
+        dest: /home/{{ ansible_user }}/sshKeys
+
+    - name: setting authorized pub keys
+      become: true
+      shell: "cat sshKeys >> /home/{{ ansible_user }}/.ssh/authorized_keys"
+      args:
+        chdir: /home/{{ ansible_user }}
+
+    - name: Install docker
+      become: true
+      snap:
+        name: docker
+
+    #################
+    #	BANCO
+    ################
+    - name: copying db files
+      copy:
+        src: /home/{{ ansible_user }}/ecommerce/banco
+        dest: /home/{{ ansible_user }}
+      when: "'db' in group_names"
+
+    - name: running docker
+      become: true
+      shell: "docker compose up -d"
+      args:
+        chdir: /home/{{ ansible_user }}/banco
+      when: "'db' in group_names"
+
+
+    #################
+    #	LOG
+    ################
+    - name: copying IPs to log vm
+      copy:
+        src: /home/{{ ansible_user }}/remote-files/hosts
+        dest: /home/{{ ansible_user }}/ips
+      when: "'grafana' in group_names"
+
+          

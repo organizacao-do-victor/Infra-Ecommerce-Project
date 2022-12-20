@@ -1,0 +1,65 @@
+- hosts: all
+
+  tasks:
+    - name: Update apt
+      become: yes
+      apt:
+        update_cache: true
+
+    - name: copying remote-files
+      copy:
+        src: "{{ playbook_dir }}/remote-files"
+        dest: /home/{{ ansible_user }}
+
+    - name: copying aws credentials
+      copy:
+        src: "~/.aws/credentials"
+        dest: /home/{{ ansible_user }}/remote-files/
+
+    - name: copying private key with read only permissions
+      copy:
+        src: "{{ playbook_dir }}/../terraform/ecommerce-key"
+        dest: /home/{{ ansible_user }}/remote-files/
+        mode: '400'
+
+    - name: Clone a pkeys
+      git:
+        repo: https://github.com/organizacao-do-victor/pkeys.git
+        dest: /home/{{ ansible_user }}/pkeys
+        force: true
+        depth: 1
+        clone: yes
+        update: yes
+
+    - name: grouping pubkeys into temp.txt
+      shell: "cat *.pub >> temp.txt"
+      args:
+       chdir: /home/{{ ansible_user }}/pkeys
+
+    - name: copying keys into authorized keys
+      become: yes
+      shell: "cat /home/{{ ansible_user }}/pkeys/temp.txt >> /home/{{ ansible_user }}/.ssh/authorized_keys"
+
+    - name: "installing ansible..."
+      become: yes
+      apt:    
+        name: ansible
+        state: latest
+
+    - name: Clone a ecommerce
+      git:
+        repo: https://github.com/organizacao-do-victor/Infra-Ecommerce-Project.git
+        dest: /home/{{ ansible_user }}/ecommerce
+        force: true
+        depth: 1
+        clone: yes
+        update: yes
+
+    - name: Run ansible
+      shell: "ansible-playbook playbookVM.yml --private-key   ~/remote-files/ecommerce-key -i ~/remote-files/hosts"
+      register: ansible
+      args:
+       chdir: /home/{{ ansible_user }}/ecommerce/automation/ansible/VM
+
+    - debug:
+        var: ansible.stdout_lines
