@@ -4,7 +4,7 @@ on:
 
 jobs:
   updating_docker_compose:
-    runs-on: ubuntu:latest
+    runs-on: ubuntu-latest
     steps:
       - name: Update Docker dependencies
   # You may pin to the exact commit or the version.
