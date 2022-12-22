@@ -1,0 +1,21 @@
+on:
+  pull_request:
+
+
+jobs:
+  updating_docker_compose:
+    runs-on: ubuntu:latest
+    steps:
+      - name: Update Docker dependencies
+  # You may pin to the exact commit or the version.
+  # uses: donatorsky/update-docker-dependencies@0a552685e380c9451ea2f333cc996a2c73ba6603
+        uses: donatorsky/update-docker-dependencies@v0.1.0
+        with:
+    # A comma separated list of images that should not be checked for newer version.
+          skip-update: no
+    # A comma separated list of images that are semantically versioned. You can also override/disable this by adding `:false`.
+          semantically-versioned-repos: true
+    # Whether check for Dockerfile updates or not.
+          update-dockerfile: true
+    # Whether check for docker-composer.yml updates or not.
+          update-docker-compose: true
