@@ -1,0 +1,18 @@
+#cd to terraform folder
+cd terraform && \
+terraform init && \
+#Waits for confirmation, -auto-approve removes it
+terraform apply && \
+#save outputs to file
+terraform output > ../output && \
+#cds out
+cd .. && \
+
+#make remote files folder if it doesn't exist
+if [ ! -d ansible/remote-files ]; then mkdir ansible/remote-files; fi && \
+#format ansible hosts and other files from output
+python3 format.py && \
+
+#ansible
+cd ansible && \
+ansible-playbook playbookLH.yml -i hosts --private-key ../terraform/ecommerce-key
