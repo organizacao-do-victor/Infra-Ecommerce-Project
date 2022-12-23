@@ -67,6 +67,7 @@ body {
 .form-control input:valid + label span {
   color: white;
   transform: translateY(-30px);
+  background-color: transparent;
 }
 
 .btn {
