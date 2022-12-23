@@ -1,33 +1,78 @@
 const express = require('express')
-const mongoose = require('mongoose')
+const bodyParser = require('body-parser')
+const dotenv = require('dotenv')
+
+const { connectToPostgres, getProducts } = require('./postgres')
+const { generateAccessToken } = require('./jwt')
+const { connectToMongo, checkExist, saveUser } = require('./mongo')
+
+// -- dotenv
+dotenv.config()
+
+async function startServer() {
+  // -- Mongo
+  await connectToMongo()
+
+  // -- Postgres
+  await connectToPostgres()
+
+  // -- Express
+  const app = express()
+  app.use(bodyParser.urlencoded({ extended: true }))
+  app.use(express.static('public'))
+
+  // -- Root get
+  app.get('/', (req, res) => {
+    console.log(req.headers)
+    res.send("Hello world!")
+  })
+
+  // -- User login
+  app.post('/login', async (req, res) => {
+    const { username, password } = req.body
+    const exists = await checkExist(username)
+
+    if (exists === null) {
+      res.statusCode = 406
+      res.send('User does not exist')
+    } else {
+      if (exists.password === password) {
+        const token = generateAccessToken({ username: username })
+        res.statusCode = 200
+        res.json(token)
+      } else {
+        res.status = 406
+        res.send('Incorrect password')
+      }
+    }
+  })
+
+  // -- User signup
+  app.post('/signup', async (req, res) => {
+    const { username, password } = req.body
+    const exists = await checkExist(username)
+
+    if (exists === null) {
+      await saveUser(username, password)
+      const token = generateAccessToken({ username: username })
+      res.statusCode = 200
+      res.json(token)
+    } else {
+      res.statusCode = 406
+      res.send('User already exists')
+    }
+  })
+
+  // -- Get all products
+  app.get('/products', async (req, res) => {
+    const products = await postgres()
+    res.statusCode = 200
+    res.json(products)
+  })
 
 
-function mongo() {
-  const mongodbUrl = 'mongodb://root:pass@3.87.237.32:27017/ecommerce?authMechanism=DEFAULT&authSource=admin&tls=false'
-  mongoose.set('strictQuery', false)
-  mongoose.connect(mongodbUrl)
+  app.listen(9999)
 }
-mongo()
 
-const userSchema = {
-  user: String,
-  pwd: String
-}
+startServer()
 
-const User = mongoose.model("User", userSchema)
-
-User.find(function(err, users) {
-  if (!err) { 
-    console.log(users)
-  } else {
-    console.log(err)
-  }
-})
-
-const app = express()
-app.use(express.static('public'))
-app.get('/', function(req, res) {
-   res.send("Hello world!")
-})
-
-app.listen(9999)
