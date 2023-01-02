@@ -65,7 +65,7 @@ async function startServer() {
 
   // -- Get all products
   app.get('/products', async (req, res) => {
-    const products = await postgres()
+    const products = await getProducts()
     res.statusCode = 200
     res.json(products)
   })
