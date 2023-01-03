@@ -1,5 +1,12 @@
 import styled from "styled-components";
 
+
+export const HeaderTitle = styled.div`
+  display: flex;
+  padding-left: 32px;
+  font-size: 30px;
+`;
+
 export const Grid = styled.div`
   display: inline-block;
   padding-right: 10px;
@@ -8,7 +15,7 @@ export const Grid = styled.div`
 
 export const CardWrapper = styled.div`
   overflow: hidden;
-  padding: 0 0 32px;
+  padding: 0 0 80px;
   margin: 48px auto 0;
   width: 300px;
   font-family: Quicksand, arial, sans-serif;
@@ -51,9 +58,7 @@ export const CardFieldset = styled.fieldset`
     margin-top: 12px;
   }
 
-  &:last-of-type {
-    text-align: center;
-  }
+
 `;
 
 export const CardInput = styled.input`
@@ -133,8 +138,10 @@ export const CardButton = styled.button`
 `;
 
 export const CardLink = styled.a`
-  display: inline-block;
-  font-size: 12px;
+  display: flex;
+  font-size: 16px;
+  padding-left: 32px;
+  margin-top: 20px;
   text-decoration: none;
   color: #aaa;
   border-bottom: 1px solid #ddd;
@@ -145,3 +152,5 @@ export const CardLink = styled.a`
     color: #777;
   }
 `;
+
+

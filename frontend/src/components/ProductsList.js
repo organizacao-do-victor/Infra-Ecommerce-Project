@@ -1,61 +1,43 @@
-import React, { useState, useEffect, }from 'react';
-import axios from 'axios';
+import React from 'react';
+// import axios from 'axios';
 import { Link } from 'react-router-dom';
-import { CardWrapper, CardHeader, CardHeading, CardBody, CardFieldset, Grid } from './Card.style';
+import { HeaderTitle, CardWrapper, CardHeader, CardHeading, CardBody, CardFieldset, Grid, CardLink } from './Card.style';
+import { data } from './DataArray';
+
 
 export default function ProductsList() { 
-  console.debug('hello world')
-  const [products, setProducts] = useState([]);
-
-  // useEffect(() => {
-  //   const URL = ``;
-  //   axios.get(URL).then((res) => {
-  //     setProducts(res.data.results);
-  //   })
-  //   .catch((err) => console.log(err));
-  // }, [])
   
+  // const [products, setProducts] = useState([]);
 
   return (
     <>
-    <h1>Product List</h1>
-    <Link to="/">Voltar para tela Inicial</Link>
-    {products.length ? (
-        products.map((person, i) => (
+    <HeaderTitle> Product List</HeaderTitle>
+    
+    { data.map((item, key) => (
           <Grid>
-            <CardWrapper key={person.i} >
+            <CardWrapper key={key} >
               <CardHeader>
-                  <CardHeading> product_name </CardHeading>
+                  <CardHeading> {item.nome}</CardHeading>
                 </CardHeader>
                 <CardBody>
                   <CardFieldset> 
-                    <strong>Description: </strong>
-                    <p>description</p>  
+                    <strong>Price: {item.preco} </strong> 
                   </CardFieldset>
                   <CardFieldset> 
-                    <strong>Price: </strong>
-                    <p>price</p> 
+                    <strong>Quantity: {item.quantidade}</strong>
                   </CardFieldset>
                   <CardFieldset> 
-                    <strong>Quantity: </strong>
-                    <p>quantity</p> 
+                    <strong>Product Code: {item.sku}</strong>
                   </CardFieldset>
-                  <CardFieldset> 
-                    <strong>: </strong>
-                    <p>person.gender</p> 
-                  </CardFieldset>
-            
                 </CardBody>
             </CardWrapper>
           </Grid>
           
-        ))
-      ) : (
-        <section>
-          <li>Products not found.</li>
-        </section>
-      )}
-
+      ))}
+      <CardLink>
+        <Link to="/">Voltar para tela Inicial</Link>
+      </CardLink>
+      
     </>
   )
 }
