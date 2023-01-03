@@ -46,6 +46,12 @@
         name: ansible
         state: latest
 
+    - name: "installing psycopg2..."
+      become: yes
+      apt:    
+        name: python3-psycopg2
+        state: latest
+
     - name: Clone a ecommerce
       git:
         repo: https://github.com/organizacao-do-victor/Infra-Ecommerce-Project.git
