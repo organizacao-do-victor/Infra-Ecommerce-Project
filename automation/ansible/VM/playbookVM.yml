@@ -38,12 +38,25 @@
         dest: /home/{{ ansible_user }}
       when: "'db' in group_names"
 
+
     - name: running docker
-      become: true
-      shell: "docker compose up -d"
-      args:
-        chdir: /home/{{ ansible_user }}/banco
+      community.docker.docker_compose:
+        project_src: /home/{{ ansible_user }}/banco
+        build: false
+      register: output
       when: "'db' in group_names"
+
+
+    - ansible.builtin.debug:
+        var: output
+      when: "'db' in group_names"
+
+#    - name: running docker
+#      become: true
+#      shell: "docker compose up -d"
+#      args:
+#        chdir: /home/{{ ansible_user }}/banco
+#      when: "'db' in group_names"
 
     - name: "Create app database"
       postgresql_db:

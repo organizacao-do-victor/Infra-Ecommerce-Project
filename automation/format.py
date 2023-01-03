@@ -1,4 +1,6 @@
 dic = {}
+dic['pgreUsr']='postgres'
+dic['pgrePort']='5432'
 
 with open('output') as file:
 	for line in file:
@@ -30,7 +32,12 @@ with open('ansible/remote-files/dotenv', 'w+') as file:
 	file.write('MONGODATABASE={}\n'.format(dic['mongoDB']))
 	file.write('BUCKETNAME={}\n'.format(dic['Bucket-name']))
 	file.write('PGHOST={}\n'.format(dic['Databases-Public-IP']))
-	file.write('PGUSER={}\n'.format('postgres'))
+	file.write('PGUSER={}\n'.format(dic['pgreUsr']))
 	file.write('PGDATABASE={}\n'.format(dic['pgreDB']))
 	file.write('PGPASSWORD={}\n'.format(dic['pgrePass']))
-	file.write('PGPORT={}\n'.format('5432'))
+	file.write('PGPORT={}\n'.format(dic['pgrePort']))
+
+with open('ansible/remote-files/ansible-vars.yaml', 'w+') as file:
+	file.write('pgreHost: {}\n'.format(dic['Databases-Public-IP']))
+	file.write('pgreUser: {}\n'.format(dic['pgreUsr']))
+	file.write('pgrePass: {}\n'.format(dic['pgrePass']))
