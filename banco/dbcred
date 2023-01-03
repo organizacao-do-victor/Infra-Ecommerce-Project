@@ -1,5 +1,0 @@
-pgrePass = "pass"
-pgreDB = "Produtos"
-mongoUser = "root"
-mongoPass = "pass"
-mongoDB = "backend-db"

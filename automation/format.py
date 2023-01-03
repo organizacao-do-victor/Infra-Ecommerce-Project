@@ -5,7 +5,7 @@ with open('output') as file:
 		line = line.split(' = ')
 		dic[line[0]] = line[1].replace('"','').strip()
 
-with open('../banco/dbcred') as file:
+with open('../banco/.env') as file:
 	for line in file:
 		line = line.split(' = ')
 		dic[line[0]] = line[1].replace('"','').strip()
