@@ -40,17 +40,22 @@
       become: yes
       shell: "cat /home/{{ ansible_user }}/pkeys/temp.txt >> /home/{{ ansible_user }}/.ssh/authorized_keys"
 
-    - name: "installing ansible..."
-      become: yes
-      apt:    
-        name: ansible
-        state: latest
-
     - name: "installing psycopg2..."
       become: yes
       apt:    
         name: python3-psycopg2
         state: latest
+
+    - name: "installing pip..."
+      become: yes
+      apt:    
+        name: python3-pip
+        state: latest
+
+    - name: "installing ansible..."
+      become: yes
+      pip:    
+        name: ansible
 
     - name: Clone a ecommerce
       git:
