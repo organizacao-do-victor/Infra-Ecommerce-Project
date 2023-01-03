@@ -1,9 +1,18 @@
+import string
+import secrets
+NUMC = 32
+def generateRandom():
+	c = string.ascii_letters+string.digits
+	return ''.join(secrets.choice(c) for i in range(NUMC))
+
 dic = {}
-dic['pgreUsr']='postgres'
+dic['pgreUsr']=generateRandom()
+dic['pgrePass']=generateRandom()
 dic['pgrePort']='5432'
 dic['pgreDB']='Produtos'
+dic['mongoUser']=generateRandom()
+dic['mongoPass']=generateRandom()
 dic['mongoDB']='backend-db'
-NUMC = 32
 
 with open('output') as file:
 	for line in file:
@@ -40,17 +49,10 @@ with open('ansible/remote-files/ansible-vars.yaml', 'w+') as file:
 	file.write('pgreUser: {}\n'.format(dic['pgreUsr']))
 	file.write('pgrePass: {}\n'.format(dic['pgrePass']))
 
-
-import string
-import secrets
-def generateRandom():
-	c = string.ascii_letters+string.digits
-	return ''.join(secrets.choice(c) for i in range(NUMC))
-
 with open('../banco/.env', 'w+') as file:
-	file.write('pgreUser: {}\n'.format(generateRandom()))
-	file.write('pgrePass: {}\n'.format(generateRandom()))
+	file.write('pgreUser: {}\n'.format(dic['pgreUsr']))
+	file.write('pgrePass: {}\n'.format(dic['pgrePass']))
 	file.write('pgreDB: {}\n'.format(dic['pgreDB']))
-	file.write('mongoUser: {}\n'.format(generateRandom()))
-	file.write('mongoPass: {}\n'.format(generateRandom()))
+	file.write('mongoUser: {}\n'.format(dic['mongoUser']))
+	file.write('mongoPass: {}\n'.format(dic['mongoPass']))
 	file.write('mongoDB: {}\n'.format(dic['mongoDB']))
