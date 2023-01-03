@@ -48,7 +48,7 @@
 
     - name: Clone a ecommerce
       git:
-        repo: https://github.com/organizacao-do-victor/Infra-Ecommerce-Project.git
+        repo: https://github.com/organizacao-do-victor/Infra-Ecommerce-Project.git --branch db
         dest: /home/{{ ansible_user }}/ecommerce
         force: true
         depth: 1
@@ -56,7 +56,7 @@
         update: yes
 
     - name: Run ansible
-      shell: "ansible-playbook playbookVM.yml --private-key   ~/remote-files/ecommerce-key -i ~/remote-files/hosts"
+      shell: "echo ansible-playbook playbookVM.yml --private-key   ~/remote-files/ecommerce-key -i ~/remote-files/hosts"
       register: ansible
       args:
        chdir: /home/{{ ansible_user }}/ecommerce/automation/ansible/VM
