@@ -57,12 +57,13 @@
         repo: https://github.com/organizacao-do-victor/Infra-Ecommerce-Project.git
         dest: /home/{{ ansible_user }}/ecommerce
         force: true
+        version: db
         depth: 1
         clone: yes
         update: yes
 
     - name: Run ansible
-      shell: "ansible-playbook playbookVM.yml --private-key   ~/remote-files/ecommerce-key -i ~/remote-files/hosts"
+      shell: "echo ansible-playbook playbookVM.yml --private-key   ~/remote-files/ecommerce-key -i ~/remote-files/hosts"
       register: ansible
       args:
        chdir: /home/{{ ansible_user }}/ecommerce/automation/ansible/VM
