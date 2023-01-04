@@ -38,11 +38,38 @@
         dest: /home/{{ ansible_user }}
       when: "'db' in group_names"
 
+    - name: copying db env
+      copy:
+        src: /home/{{ ansible_user }}/remote-files/dbenv
+        dest: /home/{{ ansible_user }}/banco/.env
+      when: "'db' in group_names"
+
+    - name: Install pip
+      become: yes
+      apt:
+        name: python3-pip
+      when: "'db' in group_names"
+
+    - name: Install python docker libs
+      become: yes
+      apt:
+        name: python3-docker
+      when: "'db' in group_names"
+
+    - name: Install python docker compose libs
+      become: yes
+      pip:
+        name: docker-compose
+      when: "'db' in group_names"
 
     - name: running docker
+      become: yes
       community.docker.docker_compose:
         project_src: /home/{{ ansible_user }}/banco
         build: false
+        env_file: /home/{{ ansible_user }}/banco/.env #require .env file
+        recreate: "always"
+        remove_orphans : true
       register: output
       when: "'db' in group_names"
 
@@ -108,5 +135,3 @@
         src: /home/{{ ansible_user }}/remote-files/hosts
         dest: /home/{{ ansible_user }}/ips
       when: "'grafana' in group_names"
-
-          

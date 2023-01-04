@@ -6,7 +6,7 @@ def generateRandom():
 	return ''.join(secrets.choice(c) for i in range(NUMC))
 
 dic = {}
-dic['pgreUsr']=generateRandom()
+dic['pgreUsr']='postgres'
 dic['pgrePass']=generateRandom()
 dic['pgrePort']='5432'
 dic['pgreDB']='Produtos'
@@ -49,10 +49,10 @@ with open('ansible/remote-files/ansible-vars.yaml', 'w+') as file:
 	file.write('pgreUser: {}\n'.format(dic['pgreUsr']))
 	file.write('pgrePass: {}\n'.format(dic['pgrePass']))
 
-with open('../banco/.env', 'w+') as file:
-	file.write('pgreUser: {}\n'.format(dic['pgreUsr']))
-	file.write('pgrePass: {}\n'.format(dic['pgrePass']))
-	file.write('pgreDB: {}\n'.format(dic['pgreDB']))
-	file.write('mongoUser: {}\n'.format(dic['mongoUser']))
-	file.write('mongoPass: {}\n'.format(dic['mongoPass']))
-	file.write('mongoDB: {}\n'.format(dic['mongoDB']))
+with open('ansible/remote-files/dbenv', 'w+') as file:
+	file.write('pgreUser={}\n'.format(dic['pgreUsr']))
+	file.write('pgrePass={}\n'.format(dic['pgrePass']))
+	file.write('pgreDB={}\n'.format(dic['pgreDB']))
+	file.write('mongoUser={}\n'.format(dic['mongoUser']))
+	file.write('mongoPass={}\n'.format(dic['mongoPass']))
+	file.write('mongoDB={}\n'.format(dic['mongoDB']))
