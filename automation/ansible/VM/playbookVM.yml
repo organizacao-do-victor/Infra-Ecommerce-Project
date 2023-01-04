@@ -74,9 +74,15 @@
       when: "'db' in group_names"
 
 
-    - ansible.builtin.debug:
+    - debug:
         var: output
       when: "'db' in group_names"
+
+    - name: Waiting for postgres to initialize
+      wait_for:
+        timeout: 5
+      when: "'db' in group_names"
+      delegate_to: localhost
 
 #    - name: running docker
 #      become: true
