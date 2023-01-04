@@ -25,6 +25,8 @@
       snap:
         name: docker
 
+
+
     #################
     #	BANCO
     ################
@@ -73,17 +75,15 @@
       register: output
       when: "'db' in group_names"
 
-
-    - ansible.builtin.debug:
+    - debug:
         var: output
       when: "'db' in group_names"
 
-#    - name: running docker
-#      become: true
-#      shell: "docker compose up -d"
-#      args:
-#        chdir: /home/{{ ansible_user }}/banco
-#      when: "'db' in group_names"
+    - name: Waiting for postgres to initialize
+      wait_for:
+        timeout: 5
+      when: "'db' in group_names"
+      delegate_to: localhost
 
     - name: "Create app database"
       postgresql_db:
@@ -135,3 +135,14 @@
         src: /home/{{ ansible_user }}/remote-files/hosts
         dest: /home/{{ ansible_user }}/ips
       when: "'grafana' in group_names"
+
+
+
+    #################
+    #	Front
+    ################
+    - name: copying .env to front
+      copy:
+        src: /home/{{ ansible_user }}/remote-files/dotenv
+        dest: /home/{{ ansible_user }}/
+      when: "'front' in group_names"
