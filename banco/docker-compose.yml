@@ -5,8 +5,7 @@ services:
     container_name: pgre
     image: postgres
     restart: always
-    ports: 
-      - "5432:5432"
+    network_mode: "host"
     environment: 
       POSTGRES_PASSWORD: "${pgrePass}"
     volumes:
@@ -17,8 +16,7 @@ services:
     container_name: mongo
     image: mongo
     restart: always
-    ports:
-      - 27017:27017
+    network_mode: "host"
     environment:
       MONGO_INITDB_ROOT_USERNAME: "${mongoUser}"
       MONGO_INITDB_ROOT_PASSWORD: "${mongoPass}"

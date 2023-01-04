@@ -1,6 +1,8 @@
 - name: docker installation
   strategy: free
   hosts: all
+  vars:
+    ansible_python_interpreter: /bin/python3
   tasks:    
     - name: Update apt
       become: yes
@@ -26,18 +28,103 @@
     #################
     #	BANCO
     ################
+    - name: read db vars
+      include_vars: /home/{{ ansible_user }}/remote-files/ansible-vars.yaml
+      when: "'db' in group_names"
+
     - name: copying db files
       copy:
         src: /home/{{ ansible_user }}/ecommerce/banco
         dest: /home/{{ ansible_user }}
       when: "'db' in group_names"
 
-    - name: running docker
-      become: true
-      shell: "docker compose up -d"
-      args:
-        chdir: /home/{{ ansible_user }}/banco
+    - name: copying db env
+      copy:
+        src: /home/{{ ansible_user }}/remote-files/dbenv
+        dest: /home/{{ ansible_user }}/banco/.env
       when: "'db' in group_names"
+
+    - name: Install pip
+      become: yes
+      apt:
+        name: python3-pip
+      when: "'db' in group_names"
+
+    - name: Install python docker libs
+      become: yes
+      apt:
+        name: python3-docker
+      when: "'db' in group_names"
+
+    - name: Install python docker compose libs
+      become: yes
+      pip:
+        name: docker-compose
+      when: "'db' in group_names"
+
+    - name: running docker
+      become: yes
+      community.docker.docker_compose:
+        project_src: /home/{{ ansible_user }}/banco
+        build: false
+        env_file: /home/{{ ansible_user }}/banco/.env #require .env file
+        recreate: "always"
+        remove_orphans : true
+      register: output
+      when: "'db' in group_names"
+
+
+    - ansible.builtin.debug:
+        var: output
+      when: "'db' in group_names"
+
+#    - name: running docker
+#      become: true
+#      shell: "docker compose up -d"
+#      args:
+#        chdir: /home/{{ ansible_user }}/banco
+#      when: "'db' in group_names"
+
+    - name: "Create app database"
+      postgresql_db:
+        name: produtos	
+        login_host: "{{pgreHost}}"
+        login_user: "{{pgreUser}}"
+        login_password: "{{pgrePass}}"
+      when: "'db' in group_names"
+      delegate_to: localhost
+
+    - name: "Init database UID"
+      postgresql_query:
+        db: produtos	
+        query: "CREATE EXTENSION IF NOT EXISTS \"uuid-ossp\""
+        login_host: "{{pgreHost}}"
+        login_user: "{{pgreUser}}"
+        login_password: "{{pgrePass}}"
+      when: "'db' in group_names"
+      delegate_to: localhost
+
+    - name: "Create app table"
+      postgresql_table:
+        db: produtos	
+        table: "produto"
+        columns: ["sku UUID PRIMARY KEY", "product_name VARCHAR (255) NOT NULL", "description VARCHAR(255)", "price NUMERIC(10,2) NOT NULL", "quantity INT NOT NULL", "image_link VARCHAR (255) NOT NULL"]
+        login_host: "{{pgreHost}}"
+        login_user: "{{pgreUser}}"
+        login_password: "{{pgrePass}}"
+      when: "'db' in group_names"
+      delegate_to: localhost
+    
+    - name: "test db"
+      postgresql_query:
+        db: produtos	
+        query: "INSERT INTO produto(sku, product_name, description, price, quantity, image_link) VALUES (uuid_generate_v4(), 'cigarro', 'Faz bem', 9.50, 1, 's3://ecommerce-as4d4ewf4wsaxasf5ergsax4er62d/79f8c29dfb6f-448d-9a99-f02ca6e7dd86.webp')"
+        login_host: "{{pgreHost}}"
+        login_user: "{{pgreUser}}"
+        login_password: "{{pgrePass}}"
+      when: "'db' in group_names"
+      delegate_to: localhost
+
 
 
     #################
@@ -48,5 +135,3 @@
         src: /home/{{ ansible_user }}/remote-files/hosts
         dest: /home/{{ ansible_user }}/ips
       when: "'grafana' in group_names"
-
-          
