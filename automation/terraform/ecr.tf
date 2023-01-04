@@ -1,5 +1,14 @@
-resource "aws_ecr_repository" "database" {
-    name = "database"
+resource "aws_ecr_repository" "mongo" {
+    name = "mongo"
+    image_tag_mutability = "MUTABLE"
+
+    image_scanning_configuration {
+      scan_on_push = true
+    }
+}
+
+resource "aws_ecr_repository" "postgres" {
+    name = "postgres"
     image_tag_mutability = "MUTABLE"
 
     image_scanning_configuration {
@@ -16,8 +25,17 @@ resource "aws_ecr_repository" "monitoring" {
     }
 }
 
-resource "aws_ecr_repository" "application" {
-    name = "application"
+resource "aws_ecr_repository" "frontend" {
+    name = "frontend"
+    image_tag_mutability = "MUTABLE"
+
+    image_scanning_configuration {
+      scan_on_push = true
+    }
+}
+
+resource "aws_ecr_repository" "backend" {
+    name = "backend"
     image_tag_mutability = "MUTABLE"
 
     image_scanning_configuration {
