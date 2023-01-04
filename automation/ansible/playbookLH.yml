@@ -62,7 +62,6 @@
         repo: https://github.com/organizacao-do-victor/Infra-Ecommerce-Project.git
         dest: /home/{{ ansible_user }}/ecommerce
         force: true
-        version: db
         depth: 1
         clone: yes
         update: yes
