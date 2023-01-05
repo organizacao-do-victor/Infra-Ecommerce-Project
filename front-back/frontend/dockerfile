@@ -1,0 +1,12 @@
+FROM node:14.10
+
+WORKDIR /app
+
+COPY ["package.json", "package-lock.json*", "./"]
+
+RUN npm install --production
+RUN npm build --production
+
+COPY . .
+
+CMD [ "npm", "start" ]

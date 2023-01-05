@@ -18,6 +18,22 @@ resource "aws_security_group" "front-app-sg" {
     cidr_blocks = [var.MYANYWHERE]
   }
 
+  ingress {
+    description = "SSH Anywhere"
+    from_port   = 3000
+    to_port     = 3000
+    protocol    = "tcp"
+    cidr_blocks = [var.MYANYWHERE]
+  }
+
+  ingress {
+    description = "SSH Anywhere"
+    from_port   = 5000
+    to_port     = 5000
+    protocol    = "tcp"
+    cidr_blocks = [var.MYANYWHERE]
+  }
+
   tags = {
     Name = "app-sg"
   }

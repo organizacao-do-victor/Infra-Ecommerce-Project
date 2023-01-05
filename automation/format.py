@@ -25,7 +25,7 @@ with open('ansible/hosts','w+') as file:
 	file.write('{} ansible_user=ubuntu'.format(dic['Ansible-Public-IP']))
 
 with open('ansible/remote-files/hosts', 'w+') as file:
-	file.write('[front]\n{} ansible_user=ubuntu\n'.format(dic['Front-App-Public-IP']))
+	file.write('[front-back]\n{} ansible_user=ubuntu\n'.format(dic['Front-App-Public-IP']))
 	file.write('[grafana]\n{} ansible_user=ubuntu\n'.format(dic['Grafana-Public-IP']))
 	file.write('[db]\n{} ansible_user=ubuntu\n'.format(dic['Databases-Public-IP']))
 
