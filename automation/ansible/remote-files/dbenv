@@ -1,0 +1,6 @@
+pgreUser=postgres
+pgrePass=jMU3XSXLtSxqWRsh4A3Z0DLuWmgDZ0UA
+pgreDB=Produtos
+mongoUser=eR9yzB6kpjwTaymMSMFT85rPaOXaxb0Y
+mongoPass=Kg7xmeCaHv1mql9zrHzEcFKZVIkReNIb
+mongoDB=backend-db
