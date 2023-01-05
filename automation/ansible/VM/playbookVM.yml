@@ -25,6 +25,8 @@
       snap:
         name: docker
 
+
+
     #################
     #	BANCO
     ################
@@ -73,7 +75,6 @@
       register: output
       when: "'db' in group_names"
 
-
     - debug:
         var: output
       when: "'db' in group_names"
@@ -83,13 +84,6 @@
         timeout: 5
       when: "'db' in group_names"
       delegate_to: localhost
-
-#    - name: running docker
-#      become: true
-#      shell: "docker compose up -d"
-#      args:
-#        chdir: /home/{{ ansible_user }}/banco
-#      when: "'db' in group_names"
 
     - name: "Create app database"
       postgresql_db:
@@ -141,3 +135,40 @@
         src: /home/{{ ansible_user }}/remote-files/hosts
         dest: /home/{{ ansible_user }}/ips
       when: "'grafana' in group_names"
+
+
+
+    #################
+    #	Front
+    ################
+    - name: copying db files
+      copy:
+        src: /home/{{ ansible_user }}/ecommerce/front-back
+        dest: /home/{{ ansible_user }}
+      when: "'front-back' in group_names"
+
+    - name: copying .env to front
+      copy:
+        src: /home/{{ ansible_user }}/remote-files/dotenv
+        dest: /home/{{ ansible_user }}/front-back/frontend
+      when: "'front-back' in group_names"
+
+    - name: copying .env to front
+      copy:
+        src: /home/{{ ansible_user }}/remote-files/dotenv
+        dest: /home/{{ ansible_user }}/front-back/backend
+      when: "'front-back' in group_names"
+
+    - name: running docker
+      become: yes
+      community.docker.docker_compose:
+        project_src: /home/{{ ansible_user }}/front-back
+        build: true
+        recreate: "always"
+        remove_orphans : true
+      register: output
+      when: "'front-back' in group_names"
+
+    - debug:
+        var: output
+      when: "'front-back' in group_names"
