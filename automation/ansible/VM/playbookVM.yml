@@ -25,6 +25,20 @@
       snap:
         name: docker
 
+    - name: Install pip
+      become: yes
+      apt:
+        name: python3-pip
+
+    - name: Install python docker libs
+      become: yes
+      apt:
+        name: python3-docker
+
+    - name: Install python docker compose libs
+      become: yes
+      pip:
+        name: docker-compose
 
 
     #################
@@ -44,24 +58,6 @@
       copy:
         src: /home/{{ ansible_user }}/remote-files/dbenv
         dest: /home/{{ ansible_user }}/banco/.env
-      when: "'db' in group_names"
-
-    - name: Install pip
-      become: yes
-      apt:
-        name: python3-pip
-      when: "'db' in group_names"
-
-    - name: Install python docker libs
-      become: yes
-      apt:
-        name: python3-docker
-      when: "'db' in group_names"
-
-    - name: Install python docker compose libs
-      become: yes
-      pip:
-        name: docker-compose
       when: "'db' in group_names"
 
     - name: running docker
