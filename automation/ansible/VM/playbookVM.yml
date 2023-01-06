@@ -4,11 +4,9 @@
   vars:
     ansible_python_interpreter: /bin/python3
   tasks:    
-    - name: Update apt
-      become: yes
-      apt:
-        update_cache: true
-
+    ##################
+    #	ssh
+    #################
     - name: copying file with the pub keys
       copy:
         src: /home/{{ ansible_user }}/pkeys/temp.txt
@@ -19,6 +17,15 @@
       shell: "cat sshKeys >> /home/{{ ansible_user }}/.ssh/authorized_keys"
       args:
         chdir: /home/{{ ansible_user }}
+
+
+    ##################
+    #	Install
+    #################
+    - name: Update apt
+      become: yes
+      apt:
+        update_cache: true
 
     - name: Install docker
       become: true
@@ -39,6 +46,31 @@
       become: yes
       pip:
         name: docker-compose
+
+    ##################
+    #	AWS ECR login
+    #################
+    - name: Read repo file
+      ansible.builtin.shell: "cat ~/remote-files/repo"
+      register: repofile
+      delegate_to: localhost
+
+    - name: Set repo
+      set_fact:
+        aws_ECR_URL: "{{ repofile.stdout }}"    
+      delegate_to: localhost
+
+    - name: Get aws password
+      ansible.builtin.shell: "aws ecr get-login-password"
+      register: awsPass
+      delegate_to: localhost
+
+    - name: Docker login
+      become: yes
+      community.docker.docker_login:
+        registry_url: "{{ aws_ECR_URL }}"
+        username: AWS
+        password: "{{awsPass.stdout}}"
 
 
     #################
@@ -83,7 +115,7 @@
 
     - name: "Create app database"
       postgresql_db:
-        name: produtos	
+        name: Produtos	
         login_host: "{{pgreHost}}"
         login_user: "{{pgreUser}}"
         login_password: "{{pgrePass}}"
@@ -92,7 +124,7 @@
 
     - name: "Init database UID"
       postgresql_query:
-        db: produtos	
+        db: Produtos	
         query: "CREATE EXTENSION IF NOT EXISTS \"uuid-ossp\""
         login_host: "{{pgreHost}}"
         login_user: "{{pgreUser}}"
@@ -102,7 +134,7 @@
 
     - name: "Create app table"
       postgresql_table:
-        db: produtos	
+        db: Produtos	
         table: "produto"
         columns: ["sku UUID PRIMARY KEY", "product_name VARCHAR (255) NOT NULL", "description VARCHAR(255)", "price NUMERIC(10,2) NOT NULL", "quantity INT NOT NULL", "image_link VARCHAR (255) NOT NULL"]
         login_host: "{{pgreHost}}"
@@ -113,7 +145,7 @@
     
     - name: "test db"
       postgresql_query:
-        db: produtos	
+        db: Produtos	
         query: "INSERT INTO produto(sku, product_name, description, price, quantity, image_link) VALUES (uuid_generate_v4(), 'cigarro', 'Faz bem', 9.50, 1, 's3://ecommerce-as4d4ewf4wsaxasf5ergsax4er62d/79f8c29dfb6f-448d-9a99-f02ca6e7dd86.webp')"
         login_host: "{{pgreHost}}"
         login_user: "{{pgreUser}}"
@@ -145,14 +177,14 @@
 
     - name: copying .env to front
       copy:
-        src: /home/{{ ansible_user }}/remote-files/.env
-        dest: /home/{{ ansible_user }}/front-back/frontend
+        src: /home/{{ ansible_user }}/remote-files/dotenv
+        dest: /home/{{ ansible_user }}/front-back/frontend/.env
       when: "'front-back' in group_names"
 
     - name: copying .env to front
       copy:
-        src: /home/{{ ansible_user }}/remote-files/.env
-        dest: /home/{{ ansible_user }}/front-back/backend
+        src: /home/{{ ansible_user }}/remote-files/dotenv
+        dest: /home/{{ ansible_user }}/front-back/backend.env
       when: "'front-back' in group_names"
 
     - name: running docker

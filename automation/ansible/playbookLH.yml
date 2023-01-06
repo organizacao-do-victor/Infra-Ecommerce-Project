@@ -1,104 +1,6 @@
 - hosts: all
 
   tasks:
-    - name: Update apt
-      become: yes
-      apt:
-        update_cache: true
-
-    ############
-    # Allow ssh
-    ############
-
-    - name: Clone a pkeys
-      git:
-        repo: https://github.com/organizacao-do-victor/pkeys.git
-        dest: /home/{{ ansible_user }}/pkeys
-        force: true
-        depth: 1
-        clone: yes
-        update: yes
-
-    - name: grouping pubkeys into temp.txt
-      shell: "cat *.pub >> temp.txt"
-      args:
-       chdir: /home/{{ ansible_user }}/pkeys
-
-    - name: copying keys into authorized keys
-      become: yes
-      shell: "cat /home/{{ ansible_user }}/pkeys/temp.txt >> /home/{{ ansible_user }}/.ssh/authorized_keys"
-
-
-    ############
-    # Get files
-    ############
-
-    - name: copying remote-files
-      copy:
-        src: "{{ playbook_dir }}/remote-files"
-        dest: /home/{{ ansible_user }}
-
-    - name: copying aws credentials
-      copy:
-        src: "~/.aws/"
-        dest: /home/{{ ansible_user }}/.aws/
-
-    - name: copying private key with read only permissions
-      copy:
-        src: "{{ playbook_dir }}/../terraform/ecommerce-key"
-        dest: /home/{{ ansible_user }}/remote-files/
-        mode: '400'
-
-    - name: read vars
-      include_vars: "{{ playbook_dir }}/ansible-vars.yaml"
-
-    - name: Clone a ecommerce
-      git:
-        repo: https://github.com/organizacao-do-victor/Infra-Ecommerce-Project.git
-        dest: /home/{{ ansible_user }}/ecommerce
-        version: "{{branch}}"
-        force: true
-        depth: 1
-        clone: yes
-        update: yes
-
-
-    #############
-    # Install dep
-    #############
-
-    - name: "installing docker..."
-      become: yes
-      snap:    
-        name: docker
-
-    - name: "installing aws cli..."
-      become: yes
-      apt:    
-        name: awscli
-        state: latest
-
-    - name: "installing psycopg2..."
-      become: yes
-      apt:    
-        name: python3-psycopg2
-        state: latest
-
-    - name: "installing pip..."
-      become: yes
-      apt:    
-        name: python3-pip
-        state: latest
-
-    - name: "installing ansible..."
-      become: yes
-      pip:    
-        name: ansible
-
-    ############
-    # ECR Images
-    ############
-
     - name: Read repo file
       ansible.builtin.shell: "cat ~/remote-files/repo"
       register: repofile
@@ -160,7 +62,7 @@
     - name: Pushing mongo
       become: yes
       community.docker.docker_image:
-        name: postgres
+        name: mongo
         repository: "{{aws_ECR_URL}}/mongo:latest"
         push: true
         source: local
@@ -168,7 +70,7 @@
     - name: Pushing frontend
       become: yes
       community.docker.docker_image:
-        name: postgres
+        name: frontend
         repository: "{{aws_ECR_URL}}/frontend:latest"
         push: true
         source: local
@@ -176,7 +78,7 @@
     - name: Pushing backend
       become: yes
       community.docker.docker_image:
-        name: postgres
+        name: backend
         repository: "{{aws_ECR_URL}}/backend:latest"
         push: true
         source: local

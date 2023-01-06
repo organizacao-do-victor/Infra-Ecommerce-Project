@@ -14,7 +14,7 @@ services:
 
   mongo:
     container_name: mongo
-    image: ${awsRepo}/mongo:latest"
+    image: "${awsRepo}/mongo:latest"
     restart: always
     network_mode: "host"
     environment:
