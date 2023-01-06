@@ -6,6 +6,9 @@
       apt:
         update_cache: true
 
+    - name: read vars
+      include_vars: "{{ playbook_dir }}/ansible-vars.yaml"
+
     - name: copying remote-files
       copy:
         src: "{{ playbook_dir }}/remote-files"
@@ -61,13 +64,14 @@
       git:
         repo: https://github.com/organizacao-do-victor/Infra-Ecommerce-Project.git
         dest: /home/{{ ansible_user }}/ecommerce
+        version: "{{branch}}"
         force: true
         depth: 1
         clone: yes
         update: yes
 
     - name: Run ansible
-      shell: "ansible-playbook playbookVM.yml --private-key   ~/remote-files/ecommerce-key -i ~/remote-files/hosts"
+      shell: "echo ansible-playbook playbookVM.yml --private-key   ~/remote-files/ecommerce-key -i ~/remote-files/hosts"
       register: ansible
       args:
        chdir: /home/{{ ansible_user }}/ecommerce/automation/ansible/VM
