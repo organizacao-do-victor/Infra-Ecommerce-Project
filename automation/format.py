@@ -33,6 +33,9 @@ with open('ansible/hosts','w+') as file:
 with open('ansible/ansible-vars.yaml','w+') as file:
 	file.write('branch: {}\n'.format(dic['branch']))
 
+with open('ansible/remote-files/repo', 'w+') as file:
+	file.write('{}.dkr.ecr.{}.amazonaws.com'.format(dic['AWS-ID'], dic['AWS-Region']))
+
 with open('ansible/remote-files/hosts', 'w+') as file:
 	file.write('[front-back]\n{} ansible_user=ubuntu\n'.format(dic['Front-App-Public-IP']))
 	file.write('[grafana]\n{} ansible_user=ubuntu\n'.format(dic['Grafana-Public-IP']))
