@@ -18,11 +18,25 @@ with open('output') as file:
 	for line in file:
 		line = line.split(' = ')
 		dic[line[0]] = line[1].replace('"','').strip()
+dic['ECR-URL']='{}.dkr.ecr.{}.amazonaws.com'.format(dic['AWS-ID'], dic['AWS-Region'])
 
+
+dic['branch'] = 'HEAD'
+try:
+	with open('../.git/HEAD') as file:
+		dic['branch'] = file.readline().strip().split('ref: refs/heads/')[1]
+except:
+	pass
 
 with open('ansible/hosts','w+') as file:
 	file.write('[vm]\n')
 	file.write('{} ansible_user=ubuntu'.format(dic['Ansible-Public-IP']))
+
+with open('ansible/ansible-vars.yaml','w+') as file:
+	file.write('branch: {}\n'.format(dic['branch']))
+
+with open('ansible/remote-files/repo', 'w+') as file:
+	file.write('{}'.format(dic['ECR-URL']))
 
 with open('ansible/remote-files/hosts', 'w+') as file:
 	file.write('[front-back]\n{} ansible_user=ubuntu\n'.format(dic['Front-App-Public-IP']))
@@ -56,3 +70,4 @@ with open('ansible/remote-files/dbenv', 'w+') as file:
 	file.write('mongoUser={}\n'.format(dic['mongoUser']))
 	file.write('mongoPass={}\n'.format(dic['mongoPass']))
 	file.write('mongoDB={}\n'.format(dic['mongoDB']))
+	file.write('awsRepo={}'.format(dic['ECR-URL']))

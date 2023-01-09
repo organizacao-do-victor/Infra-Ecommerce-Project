@@ -3,7 +3,7 @@ version : "3.7"
 services:
   pgre:
     container_name: pgre
-    image: postgres
+    image: "${awsRepo}/postgres:latest"
     restart: always
     network_mode: "host"
     environment: 
@@ -14,7 +14,7 @@ services:
 
   mongo:
     container_name: mongo
-    image: mongo
+    image: "${awsRepo}/mongo:latest"
     restart: always
     network_mode: "host"
     environment:

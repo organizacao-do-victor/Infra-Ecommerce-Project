@@ -1,5 +1,6 @@
 resource "aws_s3_bucket" "ecommerce" {
   bucket = "ecommerce-${random_uuid.uuid.result}"
+  force_destroy = true
 }
 
 resource "random_uuid" "uuid" {

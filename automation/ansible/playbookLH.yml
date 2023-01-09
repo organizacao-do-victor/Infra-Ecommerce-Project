@@ -6,21 +6,9 @@
       apt:
         update_cache: true
 
-    - name: copying remote-files
-      copy:
-        src: "{{ playbook_dir }}/remote-files"
-        dest: /home/{{ ansible_user }}
-
-    - name: copying aws credentials
-      copy:
-        src: "~/.aws/credentials"
-        dest: /home/{{ ansible_user }}/remote-files/
-
-    - name: copying private key with read only permissions
-      copy:
-        src: "{{ playbook_dir }}/../terraform/ecommerce-key"
-        dest: /home/{{ ansible_user }}/remote-files/
-        mode: '400'
+    ############
+    # Allow ssh
+    ############
 
     - name: Clone a pkeys
       git:
@@ -40,6 +28,56 @@
       become: yes
       shell: "cat /home/{{ ansible_user }}/pkeys/temp.txt >> /home/{{ ansible_user }}/.ssh/authorized_keys"
 
+
+    ############
+    # Get files
+    ############
+
+    - name: copying remote-files
+      copy:
+        src: "{{ playbook_dir }}/remote-files"
+        dest: /home/{{ ansible_user }}
+
+    - name: copying aws credentials
+      copy:
+        src: "~/.aws/"
+        dest: /home/{{ ansible_user }}/.aws/
+
+    - name: copying private key with read only permissions
+      copy:
+        src: "{{ playbook_dir }}/../terraform/ecommerce-key"
+        dest: /home/{{ ansible_user }}/remote-files/
+        mode: '400'
+
+    - name: read vars
+      include_vars: "{{ playbook_dir }}/ansible-vars.yaml"
+
+    - name: Clone a ecommerce
+      git:
+        repo: https://github.com/organizacao-do-victor/Infra-Ecommerce-Project.git
+        dest: /home/{{ ansible_user }}/ecommerce
+        version: "{{branch}}"
+        force: true
+        depth: 1
+        clone: yes
+        update: yes
+
+
+    #############
+    # Install dep
+    #############
+
+    - name: "installing docker..."
+      become: yes
+      snap:    
+        name: docker
+
+    - name: "installing aws cli..."
+      become: yes
+      apt:    
+        name: awscli
+        state: latest
+
     - name: "installing psycopg2..."
       become: yes
       apt:    
@@ -57,14 +95,96 @@
       pip:    
         name: ansible
 
-    - name: Clone a ecommerce
-      git:
-        repo: https://github.com/organizacao-do-victor/Infra-Ecommerce-Project.git
-        dest: /home/{{ ansible_user }}/ecommerce
-        force: true
-        depth: 1
-        clone: yes
-        update: yes
+    ############
+    # ECR Images
+    ############
+
+    - name: Read repo file
+      ansible.builtin.shell: "cat ~/remote-files/repo"
+      register: repofile
+
+    - name: Set repo
+      set_fact:
+        aws_ECR_URL: "{{ repofile.stdout }}"    
+
+    - name: Get aws password
+      ansible.builtin.shell: "aws ecr get-login-password"
+      register: awsPass
+
+    - name: Docker login
+      become: yes
+      community.docker.docker_login:
+        registry_url: "{{ aws_ECR_URL }}"
+        username: AWS
+        password: "{{awsPass.stdout}}"
+
+    - name: Pulling postgres image
+      become: yes
+      community.docker.docker_image:
+        name: postgres
+        source: pull
+        pull:
+
+    - name: Pulling mongo image
+      become: yes
+      community.docker.docker_image:
+        name: mongo
+        source: pull
+        pull:
+
+    - name: Building front image
+      become: yes
+      community.docker.docker_image:
+        name: frontend
+        build:
+          path: /home/{{ ansible_user }}/ecommerce/front-back/frontend
+        source: build
+
+    - name: Building back image
+      become: yes
+      community.docker.docker_image:
+        name: backend
+        build:
+          path: /home/{{ ansible_user }}/ecommerce/front-back/backend
+        source: build
+    
+
+    - name: Pushing postgres
+      become: yes
+      community.docker.docker_image:
+        name: postgres
+        repository: "{{aws_ECR_URL}}/postgres:latest"
+        push: true
+        source: local
+
+    - name: Pushing mongo
+      become: yes
+      community.docker.docker_image:
+        name: mongo
+        repository: "{{aws_ECR_URL}}/mongo:latest"
+        push: true
+        source: local
+
+    - name: Pushing frontend
+      become: yes
+      community.docker.docker_image:
+        name: frontend
+        repository: "{{aws_ECR_URL}}/frontend:latest"
+        push: true
+        source: local
+
+    - name: Pushing backend
+      become: yes
+      community.docker.docker_image:
+        name: backend
+        repository: "{{aws_ECR_URL}}/backend:latest"
+        push: true
+        source: local
+    
+
+    ############
+    # Run
+    ############
 
     - name: Run ansible
       shell: "ansible-playbook playbookVM.yml --private-key   ~/remote-files/ecommerce-key -i ~/remote-files/hosts"
