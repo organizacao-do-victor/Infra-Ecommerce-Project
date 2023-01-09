@@ -187,7 +187,7 @@
     - name: copying .env to front
       copy:
         src: /home/{{ ansible_user }}/remote-files/dotenv
-        dest: /home/{{ ansible_user }}/front-back/backend.env
+        dest: /home/{{ ansible_user }}/front-back/backend/.env
       when: "'front-back' in group_names"
 
     - name: running docker
