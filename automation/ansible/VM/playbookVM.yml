@@ -178,6 +178,18 @@
         dest: /home/{{ ansible_user }}
       when: "'front-back' in group_names"
 
+    - name: copying back to front
+      copy:
+        src: /home/{{ ansible_user }}/remote-files/frontenv
+        dest: /home/{{ ansible_user }}/front-back/.env
+      when: "'front-back' in group_names"
+
+    - name: copying back to front
+      copy:
+        src: /home/{{ ansible_user }}/remote-files/back.js
+        dest: /home/{{ ansible_user }}/front-back/frontend/src/back.js
+      when: "'front-back' in group_names"
+
     - name: copying .env to front
       copy:
         src: /home/{{ ansible_user }}/remote-files/dotenv

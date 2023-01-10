@@ -5,6 +5,8 @@ services:
     container_name: front
     build: frontend
     restart: always
+    volumes:
+      - ./frontend/src/back.js:/app/src/back.js
     ports:
      - "3000:3000"
 
