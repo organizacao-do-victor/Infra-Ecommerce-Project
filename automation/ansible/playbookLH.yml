@@ -95,6 +95,11 @@
       pip:    
         name: ansible
 
+    - name: Install python docker libs
+      become: yes
+      apt:
+        name: python3-docker
+
     ############
     # ECR Images
     ############
@@ -155,6 +160,7 @@
         name: postgres
         repository: "{{aws_ECR_URL}}/postgres:latest"
         push: true
+        force_tag: true
         source: local
 
     - name: Pushing mongo
@@ -163,6 +169,7 @@
         name: mongo
         repository: "{{aws_ECR_URL}}/mongo:latest"
         push: true
+        force_tag: true
         source: local
 
     - name: Pushing frontend
@@ -171,6 +178,7 @@
         name: frontend
         repository: "{{aws_ECR_URL}}/frontend:latest"
         push: true
+        force_tag: true
         source: local
 
     - name: Pushing backend
@@ -179,6 +187,7 @@
         name: backend
         repository: "{{aws_ECR_URL}}/backend:latest"
         push: true
+        force_tag: true
         source: local
     
 
