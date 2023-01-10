@@ -8,11 +8,13 @@
     #	ssh
     #################
     - name: copying file with the pub keys
+      tags: ssh
       copy:
         src: /home/{{ ansible_user }}/pkeys/temp.txt
         dest: /home/{{ ansible_user }}/sshKeys
 
     - name: setting authorized pub keys
+      tags: ssh
       become: true
       shell: "cat sshKeys >> /home/{{ ansible_user }}/.ssh/authorized_keys"
       args:
@@ -23,26 +25,31 @@
     #	Install
     #################
     - name: Update apt
+      tags: dep
       become: yes
       apt:
         update_cache: true
 
     - name: Install docker
+      tags: dep
       become: true
       snap:
         name: docker
 
     - name: Install pip
+      tags: dep
       become: yes
       apt:
         name: python3-pip
 
     - name: Install python docker libs
+      tags: dep
       become: yes
       apt:
         name: python3-docker
 
     - name: Install python docker compose libs
+      tags: dep
       become: yes
       pip:
         name: docker-compose
@@ -80,22 +87,33 @@
     #	BANCO
     ################
     - name: read db vars
+      tags: db
       include_vars: /home/{{ ansible_user }}/remote-files/ansible-vars.yaml
       when: "'db' in group_names"
 
     - name: copying db files
+      tags: db
       copy:
         src: /home/{{ ansible_user }}/ecommerce/banco
         dest: /home/{{ ansible_user }}
       when: "'db' in group_names"
 
     - name: copying db env
+      tags: db
       copy:
         src: /home/{{ ansible_user }}/remote-files/dbenv
         dest: /home/{{ ansible_user }}/banco/.env
       when: "'db' in group_names"
 
+    - name: copying docker clean script
+      tags: db
+      copy:
+        src: /home/{{ ansible_user }}/remote-files/clean
+        dest: /home/{{ ansible_user }}/banco/clean
+      when: "'db' in group_names"
+
     - name: running docker
+      tags: db
       become: yes
       community.docker.docker_compose:
         project_src: /home/{{ ansible_user }}/banco
@@ -108,17 +126,20 @@
 
     - debug:
         var: output
+      tags: db
       when: "'db' in group_names"
 
     - name: Waiting for postgres to initialize
+      tags: db
       wait_for:
         timeout: 5
       when: "'db' in group_names"
       delegate_to: localhost
 
     - name: "Create app database"
+      tags: db
       postgresql_db:
-        name: {{pgreDB}}	
+        name: Produtos	
         login_host: "{{pgreHost}}"
         login_user: "{{pgreUser}}"
         login_password: "{{pgrePass}}"
@@ -126,8 +147,9 @@
       delegate_to: localhost
 
     - name: "Init database UID"
+      tags: db
       postgresql_query:
-        db: {{pgreDB}}	
+        db: Produtos	
         query: "CREATE EXTENSION IF NOT EXISTS \"uuid-ossp\""
         login_host: "{{pgreHost}}"
         login_user: "{{pgreUser}}"
@@ -136,9 +158,10 @@
       delegate_to: localhost
 
     - name: "Create app table"
+      tags: db
       postgresql_table:
-        db: {{pgreDB}}	
-        table: "{{pgreTable}}"
+        db: Produtos	
+        table: "produto"
         columns: ["sku UUID PRIMARY KEY", "product_name VARCHAR (255) NOT NULL", "description VARCHAR(255)", "price NUMERIC(10,2) NOT NULL", "quantity INT NOT NULL", "image_link VARCHAR (255) NOT NULL"]
         login_host: "{{pgreHost}}"
         login_user: "{{pgreUser}}"
@@ -147,9 +170,10 @@
       delegate_to: localhost
     
     - name: "test db"
+      tags: db
       postgresql_query:
-        db: {{pgreDB}}	
-        query: "INSERT INTO {{pgreTable}}(sku, product_name, description, price, quantity, image_link) VALUES (uuid_generate_v4(), 'cigarro', 'Faz bem', 9.50, 1, 's3://ecommerce-as4d4ewf4wsaxasf5ergsax4er62d/79f8c29dfb6f-448d-9a99-f02ca6e7dd86.webp')"
+        db: Produtos	
+        query: "INSERT INTO produto(sku, product_name, description, price, quantity, image_link) VALUES (uuid_generate_v4(), 'cigarro', 'Faz bem', 9.50, 1, 's3://ecommerce-as4d4ewf4wsaxasf5ergsax4er62d/79f8c29dfb6f-448d-9a99-f02ca6e7dd86.webp')"
         login_host: "{{pgreHost}}"
         login_user: "{{pgreUser}}"
         login_password: "{{pgrePass}}"
@@ -162,6 +186,7 @@
     #	LOG
     ################
     - name: copying IPs to log vm
+      tags: log
       copy:
         src: /home/{{ ansible_user }}/remote-files/hosts
         dest: /home/{{ ansible_user }}/ips
@@ -170,39 +195,52 @@
 
 
     #################
-    #	Front
+    #	Front/Back app
     ################
     - name: copying db files
+      tags: app
       copy:
         src: /home/{{ ansible_user }}/ecommerce/front-back
         dest: /home/{{ ansible_user }}
       when: "'front-back' in group_names"
 
+    - name: copying docker clean script
+      tags: app
+      copy:
+        src: /home/{{ ansible_user }}/remote-files/clean
+        dest: /home/{{ ansible_user }}/front-back/clean
+      when: "'front-back' in group_names"
+
     - name: copying back to front
+      tags: app
       copy:
         src: /home/{{ ansible_user }}/remote-files/frontenv
         dest: /home/{{ ansible_user }}/front-back/.env
       when: "'front-back' in group_names"
 
     - name: copying back to front
+      tags: app
       copy:
         src: /home/{{ ansible_user }}/remote-files/back.js
         dest: /home/{{ ansible_user }}/front-back/frontend/src/back.js
       when: "'front-back' in group_names"
 
     - name: copying .env to front
+      tags: app
       copy:
         src: /home/{{ ansible_user }}/remote-files/dotenv
         dest: /home/{{ ansible_user }}/front-back/frontend/.env
       when: "'front-back' in group_names"
 
     - name: copying .env to front
+      tags: app
       copy:
         src: /home/{{ ansible_user }}/remote-files/dotenv
         dest: /home/{{ ansible_user }}/front-back/backend/.env
       when: "'front-back' in group_names"
 
     - name: running docker
+      tags: app
       become: yes
       community.docker.docker_compose:
         project_src: /home/{{ ansible_user }}/front-back
@@ -214,4 +252,5 @@
 
     - debug:
         var: output
+      tags: app
       when: "'front-back' in group_names"

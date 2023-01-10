@@ -13,6 +13,9 @@ if [ ! -d ansible/remote-files ]; then mkdir ansible/remote-files; fi && \
 #format ansible hosts and other files from output
 python3 format.py && \
 
+#move clean to remote folder
+cp clean ansible/remote-files/clean && \
+
 #wait for VMs to startup 
 echo -n "waiting" && sleep 3 && echo -n "." && sleep 3 && echo -n "." && sleep 3 && echo -n "." && sleep 3 && echo " done" && \
 
