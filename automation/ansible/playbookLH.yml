@@ -1,15 +1,10 @@
-- hosts: all
-
+############
+# Allow ssh
+############
+- name: get ssh keys
+  hosts: all
+  tags: ssh
   tasks:
-    - name: Update apt
-      become: yes
-      apt:
-        update_cache: true
-
-    ############
-    # Allow ssh
-    ############
-
     - name: Clone a pkeys
       git:
         repo: https://github.com/organizacao-do-victor/pkeys.git
@@ -29,10 +24,59 @@
       shell: "cat /home/{{ ansible_user }}/pkeys/temp.txt >> /home/{{ ansible_user }}/.ssh/authorized_keys"
 
 
-    ############
-    # Get files
-    ############
+#############
+# Install dep
+#############
+- name: Install dependencies 
+  hosts: all
+  tags: dep
+  tasks:
+    - name: Update apt
+      become: yes
+      apt:
+        update_cache: true
 
+    - name: "installing docker..."
+      become: yes
+      snap:    
+        name: docker
+
+    - name: "installing aws cli..."
+      become: yes
+      apt:    
+        name: awscli
+        state: latest
+
+    - name: "installing psycopg2..."
+      become: yes
+      apt:    
+        name: python3-psycopg2
+        state: latest
+
+    - name: "installing pip..."
+      become: yes
+      apt:    
+        name: python3-pip
+        state: latest
+
+    - name: "installing ansible..."
+      become: yes
+      pip:    
+        name: ansible
+
+    - name: Install python docker libs
+      become: yes
+      apt:
+        name: python3-docker
+
+
+############
+# Get files
+############
+- name: Move files
+  hosts: all
+  tags: files
+  tasks:
     - name: copying remote-files
       copy:
         src: "{{ playbook_dir }}/remote-files"
@@ -63,42 +107,13 @@
         update: yes
 
 
-    #############
-    # Install dep
-    #############
-
-    - name: "installing docker..."
-      become: yes
-      snap:    
-        name: docker
-
-    - name: "installing aws cli..."
-      become: yes
-      apt:    
-        name: awscli
-        state: latest
-
-    - name: "installing psycopg2..."
-      become: yes
-      apt:    
-        name: python3-psycopg2
-        state: latest
-
-    - name: "installing pip..."
-      become: yes
-      apt:    
-        name: python3-pip
-        state: latest
-
-    - name: "installing ansible..."
-      become: yes
-      pip:    
-        name: ansible
-
-    ############
-    # ECR Images
-    ############
-
+############
+# ECR Images
+############
+- name: Update ECR images
+  hosts: all
+  tags: ecr
+  tasks:
     - name: Read repo file
       ansible.builtin.shell: "cat ~/remote-files/repo"
       register: repofile
@@ -182,10 +197,13 @@
         source: local
     
 
-    ############
-    # Run
-    ############
-
+############
+# Run
+############
+- name: Run ansible
+  hosts: all
+  tags: run
+  tasks:
     - name: Run ansible
       shell: "ansible-playbook playbookVM.yml --private-key   ~/remote-files/ecommerce-key -i ~/remote-files/hosts"
       register: ansible

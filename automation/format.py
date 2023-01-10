@@ -71,3 +71,8 @@ with open('ansible/remote-files/dbenv', 'w+') as file:
 	file.write('mongoPass={}\n'.format(dic['mongoPass']))
 	file.write('mongoDB={}\n'.format(dic['mongoDB']))
 	file.write('awsRepo={}'.format(dic['ECR-URL']))
+
+
+with open('ansible/remote-files/back.js', 'w+') as file:
+	file.write('const api = "{}"\n'.format(dic['Front-App-Public-IP']))
+	file.write('module.exports = {\n\tapi;\n}')
