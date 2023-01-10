@@ -1,130 +1,72 @@
-############
-# Allow ssh
-############
-- name: get ssh keys
+- name: docker installation
+  strategy: free
   hosts: all
-  tags: ssh
-  tasks:
-    - name: Clone a pkeys
-      git:
-        repo: https://github.com/organizacao-do-victor/pkeys.git
-        dest: /home/{{ ansible_user }}/pkeys
-        force: true
-        depth: 1
-        clone: yes
-        update: yes
+  vars:
+    ansible_python_interpreter: /bin/python3
+  tasks:    
+    ##################
+    #	ssh
+    #################
+    - name: copying file with the pub keys
+      copy:
+        src: /home/{{ ansible_user }}/pkeys/temp.txt
+        dest: /home/{{ ansible_user }}/sshKeys
 
-    - name: grouping pubkeys into temp.txt
-      shell: "cat *.pub >> temp.txt"
+    - name: setting authorized pub keys
+      become: true
+      shell: "cat sshKeys >> /home/{{ ansible_user }}/.ssh/authorized_keys"
       args:
-       chdir: /home/{{ ansible_user }}/pkeys
-
-    - name: copying keys into authorized keys
-      become: yes
-      shell: "cat /home/{{ ansible_user }}/pkeys/temp.txt >> /home/{{ ansible_user }}/.ssh/authorized_keys"
+        chdir: /home/{{ ansible_user }}
 
 
-#############
-# Install dep
-#############
-- name: Install dependencies 
-  hosts: all
-  tags: dep
-  tasks:
+    ##################
+    #	Install
+    #################
     - name: Update apt
       become: yes
       apt:
         update_cache: true
 
-    - name: "installing docker..."
-      become: yes
-      snap:    
+    - name: Install docker
+      become: true
+      snap:
         name: docker
 
-    - name: "installing aws cli..."
+    - name: Install pip
       become: yes
-      apt:    
-        name: awscli
-        state: latest
-
-    - name: "installing psycopg2..."
-      become: yes
-      apt:    
-        name: python3-psycopg2
-        state: latest
-
-    - name: "installing pip..."
-      become: yes
-      apt:    
+      apt:
         name: python3-pip
-        state: latest
-
-    - name: "installing ansible..."
-      become: yes
-      pip:    
-        name: ansible
 
     - name: Install python docker libs
       become: yes
       apt:
         name: python3-docker
 
+    - name: Install python docker compose libs
+      become: yes
+      pip:
+        name: docker-compose
 
-############
-# Get files
-############
-- name: Move files
-  hosts: all
-  tags: files
-  tasks:
-    - name: copying remote-files
-      copy:
-        src: "{{ playbook_dir }}/remote-files"
-        dest: /home/{{ ansible_user }}
-
-    - name: copying aws credentials
-      copy:
-        src: "~/.aws/"
-        dest: /home/{{ ansible_user }}/.aws/
-
-    - name: copying private key with read only permissions
-      copy:
-        src: "{{ playbook_dir }}/../terraform/ecommerce-key"
-        dest: /home/{{ ansible_user }}/remote-files/
-        mode: '400'
-
-    - name: read vars
-      include_vars: "{{ playbook_dir }}/ansible-vars.yaml"
-
-    - name: Clone a ecommerce
-      git:
-        repo: https://github.com/organizacao-do-victor/Infra-Ecommerce-Project.git
-        dest: /home/{{ ansible_user }}/ecommerce
-        version: "{{branch}}"
-        force: true
-        depth: 1
-        clone: yes
-        update: yes
-
-
-############
-# ECR Images
-############
-- name: Update ECR images
-  hosts: all
-  tags: ecr
-  tasks:
+    ##################
+    #	AWS ECR login
+    #################
     - name: Read repo file
       ansible.builtin.shell: "cat ~/remote-files/repo"
       register: repofile
+      delegate_to: localhost
+      run_once: true
 
     - name: Set repo
       set_fact:
         aws_ECR_URL: "{{ repofile.stdout }}"    
+      delegate_to: localhost
+      run_once: true
 
     - name: Get aws password
       ansible.builtin.shell: "aws ecr get-login-password"
       register: awsPass
+      delegate_to: localhost
+      run_once: true
 
     - name: Docker login
       become: yes
@@ -133,82 +75,143 @@
         username: AWS
         password: "{{awsPass.stdout}}"
 
-    - name: Pulling postgres image
-      become: yes
-      community.docker.docker_image:
-        name: postgres
-        source: pull
-        pull:
 
-    - name: Pulling mongo image
-      become: yes
-      community.docker.docker_image:
-        name: mongo
-        source: pull
-        pull:
+    #################
+    #	BANCO
+    ################
+    - name: read db vars
+      include_vars: /home/{{ ansible_user }}/remote-files/ansible-vars.yaml
+      when: "'db' in group_names"
 
-    - name: Building front image
-      become: yes
-      community.docker.docker_image:
-        name: frontend
-        build:
-          path: /home/{{ ansible_user }}/ecommerce/front-back/frontend
-        source: build
+    - name: copying db files
+      copy:
+        src: /home/{{ ansible_user }}/ecommerce/banco
+        dest: /home/{{ ansible_user }}
+      when: "'db' in group_names"
 
-    - name: Building back image
-      become: yes
-      community.docker.docker_image:
-        name: backend
-        build:
-          path: /home/{{ ansible_user }}/ecommerce/front-back/backend
-        source: build
-    
+    - name: copying db env
+      copy:
+        src: /home/{{ ansible_user }}/remote-files/dbenv
+        dest: /home/{{ ansible_user }}/banco/.env
+      when: "'db' in group_names"
 
-    - name: Pushing postgres
+    - name: running docker
       become: yes
-      community.docker.docker_image:
-        name: postgres
-        repository: "{{aws_ECR_URL}}/postgres:latest"
-        push: true
-        source: local
-
-    - name: Pushing mongo
-      become: yes
-      community.docker.docker_image:
-        name: mongo
-        repository: "{{aws_ECR_URL}}/mongo:latest"
-        push: true
-        source: local
-
-    - name: Pushing frontend
-      become: yes
-      community.docker.docker_image:
-        name: frontend
-        repository: "{{aws_ECR_URL}}/frontend:latest"
-        push: true
-        source: local
-
-    - name: Pushing backend
-      become: yes
-      community.docker.docker_image:
-        name: backend
-        repository: "{{aws_ECR_URL}}/backend:latest"
-        push: true
-        source: local
-    
-
-############
-# Run
-############
-- name: Run ansible
-  hosts: all
-  tags: run
-  tasks:
-    - name: Run ansible
-      shell: "ansible-playbook playbookVM.yml --private-key   ~/remote-files/ecommerce-key -i ~/remote-files/hosts"
-      register: ansible
-      args:
-       chdir: /home/{{ ansible_user }}/ecommerce/automation/ansible/VM
+      community.docker.docker_compose:
+        project_src: /home/{{ ansible_user }}/banco
+        build: false
+        env_file: /home/{{ ansible_user }}/banco/.env #require .env file
+        recreate: "always"
+        remove_orphans : true
+      register: output
+      when: "'db' in group_names"
 
     - debug:
-        var: ansible.stdout_lines
+        var: output
+      when: "'db' in group_names"
+
+    - name: Waiting for postgres to initialize
+      wait_for:
+        timeout: 5
+      when: "'db' in group_names"
+      delegate_to: localhost
+
+    - name: "Create app database"
+      postgresql_db:
+        name: Produtos	
+        login_host: "{{pgreHost}}"
+        login_user: "{{pgreUser}}"
+        login_password: "{{pgrePass}}"
+      when: "'db' in group_names"
+      delegate_to: localhost
+
+    - name: "Init database UID"
+      postgresql_query:
+        db: Produtos	
+        query: "CREATE EXTENSION IF NOT EXISTS \"uuid-ossp\""
+        login_host: "{{pgreHost}}"
+        login_user: "{{pgreUser}}"
+        login_password: "{{pgrePass}}"
+      when: "'db' in group_names"
+      delegate_to: localhost
+
+    - name: "Create app table"
+      postgresql_table:
+        db: Produtos	
+        table: "produto"
+        columns: ["sku UUID PRIMARY KEY", "product_name VARCHAR (255) NOT NULL", "description VARCHAR(255)", "price NUMERIC(10,2) NOT NULL", "quantity INT NOT NULL", "image_link VARCHAR (255) NOT NULL"]
+        login_host: "{{pgreHost}}"
+        login_user: "{{pgreUser}}"
+        login_password: "{{pgrePass}}"
+      when: "'db' in group_names"
+      delegate_to: localhost
+    
+    - name: "test db"
+      postgresql_query:
+        db: Produtos	
+        query: "INSERT INTO produto(sku, product_name, description, price, quantity, image_link) VALUES (uuid_generate_v4(), 'cigarro', 'Faz bem', 9.50, 1, 's3://ecommerce-as4d4ewf4wsaxasf5ergsax4er62d/79f8c29dfb6f-448d-9a99-f02ca6e7dd86.webp')"
+        login_host: "{{pgreHost}}"
+        login_user: "{{pgreUser}}"
+        login_password: "{{pgrePass}}"
+      when: "'db' in group_names"
+      delegate_to: localhost
+
+
+
+    #################
+    #	LOG
+    ################
+    - name: copying IPs to log vm
+      copy:
+        src: /home/{{ ansible_user }}/remote-files/hosts
+        dest: /home/{{ ansible_user }}/ips
+      when: "'grafana' in group_names"
+
+
+
+    #################
+    #	Front
+    ################
+    - name: copying db files
+      copy:
+        src: /home/{{ ansible_user }}/ecommerce/front-back
+        dest: /home/{{ ansible_user }}
+      when: "'front-back' in group_names"
+
+    - name: copying back to front
+      copy:
+        src: /home/{{ ansible_user }}/remote-files/frontenv
+        dest: /home/{{ ansible_user }}/front-back/.env
+      when: "'front-back' in group_names"
+
+    - name: copying back to front
+      copy:
+        src: /home/{{ ansible_user }}/remote-files/back.js
+        dest: /home/{{ ansible_user }}/front-back/frontend/src/back.js
+      when: "'front-back' in group_names"
+
+    - name: copying .env to front
+      copy:
+        src: /home/{{ ansible_user }}/remote-files/dotenv
+        dest: /home/{{ ansible_user }}/front-back/frontend/.env
+      when: "'front-back' in group_names"
+
+    - name: copying .env to front
+      copy:
+        src: /home/{{ ansible_user }}/remote-files/dotenv
+        dest: /home/{{ ansible_user }}/front-back/backend/.env
+      when: "'front-back' in group_names"
+
+    - name: running docker
+      become: yes
+      community.docker.docker_compose:
+        project_src: /home/{{ ansible_user }}/front-back
+        build: true
+        recreate: "always"
+        remove_orphans : true
+      register: output
+      when: "'front-back' in group_names"
+
+    - debug:
+        var: output
+      when: "'front-back' in group_names"
