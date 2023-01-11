@@ -61,4 +61,3 @@ resource "aws_instance" "ansible-project" {
     Project = "ecommerce-project"
   }
 }
-

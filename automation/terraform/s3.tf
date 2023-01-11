@@ -1,6 +1,5 @@
 resource "aws_s3_bucket" "ecommerce" {
   bucket = "ecommerce-${random_uuid.uuid.result}"
-  force_destroy = true
 }
 
 resource "random_uuid" "uuid" {
@@ -15,4 +14,3 @@ resource "aws_s3_bucket_public_access_block" "ecommerce" {
   ignore_public_acls      = false
   restrict_public_buckets = false
 }
-
