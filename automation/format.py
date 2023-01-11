@@ -79,3 +79,6 @@ with open('ansible/remote-files/back.js', 'w+') as file:
 	file.write('const api = "{}"\n'.format(dic['Front-App-Public-IP']))
 	file.write('module.exports = {\n\tapi;\n}')
 
+
+with open('ansible/remote-files/awsconfig', 'w+') as file:
+	file.write('[default]\nregion = {}'.format(dic['AWS-Region']))

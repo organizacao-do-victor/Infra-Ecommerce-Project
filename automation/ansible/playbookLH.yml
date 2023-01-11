@@ -87,6 +87,12 @@
         src: "~/.aws/"
         dest: /home/{{ ansible_user }}/.aws/
 
+    - name: creating aws config
+      copy:
+        src: "{{ playbook_dir }}/remote-files/awsconfig"
+        dest: /home/{{ ansible_user }}/.aws/config
+        force: false
+
     - name: copying private key with read only permissions
       copy:
         src: "{{ playbook_dir }}/../terraform/ecommerce-key"
