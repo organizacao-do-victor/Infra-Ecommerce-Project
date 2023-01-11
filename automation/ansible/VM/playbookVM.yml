@@ -139,7 +139,7 @@
     - name: "Create app database"
       tags: db
       postgresql_db:
-        name: Produtos	
+        name: "{{pgrDB}}"	
         login_host: "{{pgreHost}}"
         login_user: "{{pgreUser}}"
         login_password: "{{pgrePass}}"
@@ -149,7 +149,7 @@
     - name: "Init database UID"
       tags: db
       postgresql_query:
-        db: Produtos	
+        db: "{{pgrDB}}"	
         query: "CREATE EXTENSION IF NOT EXISTS \"uuid-ossp\""
         login_host: "{{pgreHost}}"
         login_user: "{{pgreUser}}"
@@ -160,8 +160,8 @@
     - name: "Create app table"
       tags: db
       postgresql_table:
-        db: Produtos	
-        table: "produto"
+        db: "{{pgrDB}}"	
+        table: "{{pgrTable}}"
         columns: ["sku UUID PRIMARY KEY", "product_name VARCHAR (255) NOT NULL", "description VARCHAR(255)", "price NUMERIC(10,2) NOT NULL", "quantity INT NOT NULL", "image_link VARCHAR (255) NOT NULL"]
         login_host: "{{pgreHost}}"
         login_user: "{{pgreUser}}"
@@ -172,8 +172,8 @@
     - name: "test db"
       tags: db
       postgresql_query:
-        db: Produtos	
-        query: "INSERT INTO produto(sku, product_name, description, price, quantity, image_link) VALUES (uuid_generate_v4(), 'cigarro', 'Faz bem', 9.50, 1, 's3://ecommerce-as4d4ewf4wsaxasf5ergsax4er62d/79f8c29dfb6f-448d-9a99-f02ca6e7dd86.webp')"
+        db: "{{pgrDB}}"	
+        query: "INSERT INTO {{pgrTable}}(sku, product_name, description, price, quantity, image_link) VALUES (uuid_generate_v4(), 'cigarro', 'Faz bem', 9.50, 1, 's3://ecommerce-as4d4ewf4wsaxasf5ergsax4er62d/79f8c29dfb6f-448d-9a99-f02ca6e7dd86.webp')"
         login_host: "{{pgreHost}}"
         login_user: "{{pgreUser}}"
         login_password: "{{pgrePass}}"

@@ -9,7 +9,8 @@ dic = {}
 dic['pgreUsr']='postgres'
 dic['pgrePass']=generateRandom()
 dic['pgrePort']='5432'
-dic['pgreDB']='Produtos'
+dic['pgreDB']='products'
+dic['pgreTable']='product'
 dic['mongoUser']=generateRandom()
 dic['mongoPass']=generateRandom()
 dic['mongoDB']='backend-db'
@@ -61,6 +62,8 @@ with open('ansible/remote-files/dotenv', 'w+') as file:
 with open('ansible/remote-files/ansible-vars.yaml', 'w+') as file:
 	file.write('pgreHost: {}\n'.format(dic['Databases-Public-IP']))
 	file.write('pgreUser: {}\n'.format(dic['pgreUsr']))
+	file.write('pgrDB: {}\n'.format(dic['pgreDB']))
+	file.write('pgrTable: {}\n'.format(dic['pgreTable']))
 	file.write('pgrePass: {}\n'.format(dic['pgrePass']))
 
 with open('ansible/remote-files/dbenv', 'w+') as file:
