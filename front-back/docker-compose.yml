@@ -14,4 +14,4 @@ services:
     container_name: back
     build: backend
     ports:
-    - "5000:5000"
+      - "5000:5000"
