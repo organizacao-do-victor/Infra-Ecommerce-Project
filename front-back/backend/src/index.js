@@ -4,7 +4,7 @@ const dotenv = require('dotenv')
 
 const { connectToPostgres, getProducts } = require('./postgres')
 const { generateAccessToken } = require('./jwt')
-const { checkExist, saveUser } = require('./mongo')
+const { connectToMongo, checkExist, saveUser } = require('./mongo')
 
 // -- dotenv
 dotenv.config()
