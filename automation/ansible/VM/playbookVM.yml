@@ -211,7 +211,7 @@
       tags: log
       copy:
         src: "/home/{{ ansible_user }}/remote-files/prometheus.yml"
-        dest: "/etc/prometheus/"
+        dest: "/home/{{ ansible_user }}/monitoring/prometheus/"
       when: "'grafana' in group_names"
 
     - name: running docker-compose file
