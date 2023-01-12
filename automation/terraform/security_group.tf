@@ -19,19 +19,11 @@ resource "aws_security_group" "front-app-sg" {
   }
 
   ingress {
-    description = "SSH Anywhere"
-    from_port   = 3000
-    to_port     = 3000
+    description = "Prometheus port"
+    from_port   = 9100
+    to_port     = 9100
     protocol    = "tcp"
-    cidr_blocks = [var.MYANYWHERE]
-  }
-
-  ingress {
-    description = "SSH Anywhere"
-    from_port   = 5000
-    to_port     = 5000
-    protocol    = "tcp"
-    cidr_blocks = [var.MYANYWHERE]
+    cidr_blocks = ["${aws_instance.grafana-project.public_ip}/32"]
   }
 
   tags = {
@@ -55,6 +47,22 @@ resource "aws_security_group" "grafana-sg" {
     description = "SSH Anywhere"
     from_port   = 22
     to_port     = 22
+    protocol    = "tcp"
+    cidr_blocks = [var.MYANYWHERE]
+  }
+
+  ingress {
+    description = "Grafana port"
+    from_port   = 3000
+    to_port     = 3000
+    protocol    = "tcp"
+    cidr_blocks = [var.MYANYWHERE]
+  }
+
+  ingress {
+    description = "Prometheus port"
+    from_port   = 9090
+    to_port     = 9090
     protocol    = "tcp"
     cidr_blocks = [var.MYANYWHERE]
   }
@@ -100,6 +108,14 @@ resource "aws_security_group" "databases-sg" {
     cidr_blocks = [var.MYANYWHERE]
   }
 
+  ingress {
+    description = "Prometheus port"
+    from_port   = 9100
+    to_port     = 9100
+    protocol    = "tcp"
+    cidr_blocks = ["${aws_instance.grafana-project.public_ip}/32"]
+  }
+
   tags = {
     Name = "databases-sg"
   }
@@ -123,6 +139,14 @@ resource "aws_security_group" "ansible-sg" {
     to_port     = 22
     protocol    = "tcp"
     cidr_blocks = [var.MYANYWHERE]
+  }
+
+  ingress {
+    description = "Prometheus port"
+    from_port   = 9100
+    to_port     = 9100
+    protocol    = "tcp"
+    cidr_blocks = ["${aws_instance.grafana-project.public_ip}/32"]
   }
 
   tags = {

@@ -203,6 +203,36 @@
         source: local
     
 
+################
+# Node Exporter
+###############
+- name: Install node exporter
+  hosts: all
+  tags: pnode
+  tasks:
+    - name: Install node exporter on Ansible EC2
+      shell: "ansible-playbook node_exporter.yml --private-key   ../../terraform/ecommerce-key -i ../hosts"
+      register: nodeexp
+      args:
+       chdir: "{{ playbook_dir }}/ansible-node-exporter/"
+      delegate_to: localhost
+
+    - debug:
+        var: nodeexp.stdout_lines
+
+- name: Install node exporter on other EC2s
+  hosts: all
+  tags: pnode
+  tasks:
+    - name: Install node exporter
+      shell: "ansible-playbook node_exporter.yml --private-key   ~/remote-files/ecommerce-key -i ~/remote-files/hosts"
+      register: nodeexp
+      args:
+       chdir: /home/{{ ansible_user }}/ecommerce/automation/ansible/ansible-node-exporter
+
+    - debug:
+        var: nodeexp.stdout_lines
+
 ############
 # Run
 ############

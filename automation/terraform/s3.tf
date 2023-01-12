@@ -15,4 +15,3 @@ resource "aws_s3_bucket_public_access_block" "ecommerce" {
   ignore_public_acls      = false
   restrict_public_buckets = false
 }
-

@@ -1,0 +1,65 @@
+- hosts: all
+  strategy: free
+  tasks:
+    - name: download node exporter
+      tags: pnode
+      get_url:
+        url: https://github.com/prometheus/node_exporter/releases/download/v0.18.1/node_exporter-0.18.1.linux-amd64.tar.gz
+        dest: /tmp
+      when: "'grafana' not in group_names"
+
+    - name: unarchive node exporter
+      tags: pnode
+      unarchive:
+        remote_src: yes
+        src: /tmp/node_exporter-0.18.1.linux-amd64.tar.gz
+        dest: /tmp
+      when: "'grafana' not in group_names"
+
+    - name: move node exporter to /usr/local/bin
+      tags: pnode
+      become: true
+      copy:
+        src: /tmp/node_exporter-0.18.1.linux-amd64/node_exporter
+        dest: /usr/local/bin/
+        remote_src: yes
+        owner: root
+        group: root
+        mode: 0755
+      when: "'grafana' not in group_names"
+
+    - name: useradd -rs node-exporter
+      tags: pnode
+      become: true
+      shell:
+        "if ! id node_exporter; then sudo useradd -rs /bin/false node_exporter; fi"
+      when: "'grafana' not in group_names"
+
+    - name: install unit file to systemd
+      tags: pnode
+      become: true
+      template:
+        src: "{{ playbook_dir }}/node_exporter.service.j2"
+        dest: /etc/systemd/system/node_exporter.service
+        owner: root
+        group: root
+        mode: 0600
+      when: "'grafana' not in group_names"
+
+    - name: configure systemd to use service
+      tags: pnode
+      become: true
+      systemd:
+        daemon_reload: yes
+        enabled: yes
+        state: restarted
+        name: node_exporter.service
+      when: "'grafana' not in group_names"
+
+    - name: Reload service node_exporter
+      tags: pnode
+      become: true
+      ansible.builtin.systemd:
+        name: node_exporter
+        state: restarted
+      when: "'grafana' not in group_names"

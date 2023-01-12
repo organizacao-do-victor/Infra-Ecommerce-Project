@@ -192,6 +192,35 @@
         dest: /home/{{ ansible_user }}/ips
       when: "'grafana' in group_names"
 
+    - name: make var/data dir
+      tags: log
+      file:
+        path: /home/{{ ansible_user }}/monitoring
+        state: directory
+      when: "'grafana' in group_names"
+
+    - name: Copiar docker-compose local p servidor
+      tags: log
+      copy:
+        src: "/home/{{ ansible_user }}/ecommerce/grafana-prometheus-compose/docker-compose.yml"
+        dest: "/home/{{ ansible_user }}/monitoring"
+      when: "'grafana' in group_names"
+
+    - name: Copiar prometheus.yml local p servidor
+      become: true
+      tags: log
+      copy:
+        src: "/home/{{ ansible_user }}/remote-files/prometheus.yml"
+        dest: "/home/{{ ansible_user }}/monitoring/prometheus/"
+      when: "'grafana' in group_names"
+
+    - name: running docker-compose file
+      become: true
+      tags: log
+      docker_compose:
+        project_src: /home/{{ ansible_user }}/monitoring
+        state: present
+      when: "'grafana' in group_names"
 
 
     #################

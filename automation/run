@@ -1,3 +1,4 @@
+date
 #cd to terraform folder
 cd terraform && \
 terraform init && \
@@ -22,3 +23,4 @@ echo -n "waiting" && sleep 3 && echo -n "." && sleep 3 && echo -n "." && sleep 3
 #ansible
 cd ansible && \
 ansible-playbook playbookLH.yml -i hosts --private-key ../terraform/ecommerce-key
+date
