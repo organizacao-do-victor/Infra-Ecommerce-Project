@@ -1,20 +1,31 @@
 import React, { useState, useEffect, }from 'react';
-import axios from 'axios';
 import { Link } from 'react-router-dom';
 import { CardWrapper, CardHeader, CardHeading, CardBody, CardFieldset, Grid } from './Card.style';
 
-export default function ProductsList() { 
+export default function ProductsList() {
+  const [isLoaded, setIsLoaded] = useState(false)
   const [products, setProducts] = useState([]);
 
   useEffect(() => {
-    const URL = 'https://localhost:5000/products';
-    axios.get(URL).then((res) => {
-      console.debug(res)
-      setProducts(res.data.results);
-    })
-    .catch((err) => console.log(err));
-  }, [])
-  
+    console.log('hello world')
+    fetch(
+      'http://44.193.94.210:5000/products',
+      { 
+        method: "GET",
+        mode: 'cors',
+        headers: {
+          'Content-Type': 'application/json',
+          'Access-Control-Allow-Origin': '*',
+        }
+      }
+    )
+      .then((res) => res.json())
+      .then((data) => {
+        setIsLoaded(true)
+        setProducts(data)
+        // console.log(data)
+      })
+  })
 
   return (
     <>
