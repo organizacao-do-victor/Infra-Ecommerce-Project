@@ -1,30 +1,25 @@
 import React, { useState, useEffect, }from 'react';
 import { Link } from 'react-router-dom';
+import axios from 'axios';
 import { CardWrapper, CardHeader, CardHeading, CardBody, CardFieldset, Grid } from './Card.style';
 
 export default function ProductsList() {
-  const [isLoaded, setIsLoaded] = useState(false)
   const [products, setProducts] = useState([]);
 
+  const url = 'http://44.193.94.210:5000/products'
+
+  const getAllProducts = () => {
+    axios.get(url)
+    .then((response) => {
+      setProducts(response.data);
+    })
+    .catch(function(error){
+      console.log(error);
+    });
+  }
+
   useEffect(() => {
-    console.log('hello world')
-    fetch(
-      'http://44.193.94.210:5000/products',
-      { 
-        method: "GET",
-        mode: 'cors',
-        headers: {
-          'Content-Type': 'application/json',
-          'Access-Control-Allow-Origin': '*',
-        }
-      }
-    )
-      .then((res) => res.json())
-      .then((data) => {
-        setIsLoaded(true)
-        setProducts(data)
-        // console.log(data)
-      })
+    getAllProducts();
   })
 
   return (
@@ -32,24 +27,21 @@ export default function ProductsList() {
     <h1>Product List</h1>
     <Link to="/">Voltar para tela Inicial</Link>
     {products.length ? (
-        products.map((person, i) => (
+        products.map((item, key) => (
           <Grid>
-            <CardWrapper key={person.i} >
+            <CardWrapper key={key} >
               <CardHeader>
-                  <CardHeading> product_name </CardHeading>
+                  <CardHeading> {item.name}</CardHeading>
                 </CardHeader>
                 <CardBody>
                   <CardFieldset> 
-                    <strong>Description: </strong>
-                    <p>description</p>  
+                    <strong>Price: {item.price} </strong> 
                   </CardFieldset>
                   <CardFieldset> 
-                    <strong>Price: </strong>
-                    <p>price</p> 
+                    <strong>Quantity: {item.quantity}</strong>
                   </CardFieldset>
                   <CardFieldset> 
-                    <strong>Quantity: </strong>
-                    <p>quantity</p> 
+                    <strong>Product Code: {item.sku}</strong>
                   </CardFieldset>
                 </CardBody>
             </CardWrapper>
