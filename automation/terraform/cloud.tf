@@ -3,7 +3,7 @@ terraform {
     organization = "80400815"
 
     workspaces {
-      name = "InfraCLI"
+      name = "Infra-Ecommerce-Project"
     }
   }
 }
