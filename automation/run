@@ -24,3 +24,6 @@ echo -n "waiting" && sleep 3 && echo -n "." && sleep 3 && echo -n "." && sleep 3
 cd ansible && \
 ansible-playbook playbookLH.yml -i hosts --private-key ../terraform/ecommerce-key
 date
+cd terraform
+terraform output Front-App-Public-IP
+cd ..

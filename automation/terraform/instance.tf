@@ -16,7 +16,7 @@ resource "aws_key_pair" "key_pair" {
 
 resource "aws_instance" "front-app-project" {
   ami                    = var.AMIS[var.REGION]
-  instance_type          = "t2.micro"
+  instance_type          = "t2.small"
   subnet_id              = aws_subnet.ecommerce-project-pub-1.id
   key_name               = aws_key_pair.key_pair.key_name
   vpc_security_group_ids = [aws_security_group.front-app-sg.id]
