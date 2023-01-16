@@ -1,0 +1,112 @@
+##################
+#	Pgre add user
+##################
+- name: pgreUser
+  hosts: localhost
+  tags: pgre
+  tasks:
+    - name: read db vars
+      include_vars: /home/{{ ansible_user }}/remote-files/ansible-vars.yaml
+#      include_vars: ansible-vars.yaml
+
+    - debug:
+        msg: "Adding user '{{newUser}}' to pgre DB"
+
+    - name: "Create db user"
+      postgresql_user:
+        name: "{{pgrDB}}"	
+        login_host: "{{pgreHost}}"
+        login_user: "{{pgreUser}}"
+        login_password: "{{pgrePass}}"
+        state: present
+        name: "{{newUser}}"
+        password: "{{newPass}}"
+  
+    - name: "Add read permissions"
+      postgresql_privs:
+        type: table
+        database: "{{pgrDB}}"	
+        objs: "{{pgrTable}}"
+        login_host: "{{pgreHost}}"
+        login_user: "{{pgreUser}}"
+        login_password: "{{pgrePass}}"
+        roles: "{{newUser}}"
+        password: "{{newPass}}"
+        grant_option: no
+        privs: SELECT
+   
+
+########################
+#	Pgre add user perms
+########################
+- name: pgreAdmin
+  hosts: localhost
+  tags: pgreAdmin
+  vars:
+    ansible_python_interpreter: /bin/python3
+  tasks:
+    - debug:
+        msg: "Giving user '{{newUser}}' all pgre table perms"
+
+    - name: "Add admin access"
+      postgresql_privs:
+        type: table
+        database: "{{pgrDB}}"
+        objs: "{{pgrTable}}"
+        login_host: "{{pgreHost}}"
+        login_user: "{{pgreUser}}"
+        login_password: "{{pgrePass}}"
+        roles: "{{newUser}}"
+        password: "{{newPass}}"
+        grant_option: no
+        privs: all
+
+
+###################
+#	Mongo add user
+###################
+#- name: mongoUser
+#  hosts: localhost
+#  tags: mongo
+#  tasks:
+#    - name: read db vars
+##      include_vars: /home/{{ ansible_user }}/remote-files/ansible-vars.yaml
+#      include_vars: ansible-vars.yaml
+#
+#    - debug:
+#        msg: "Adding user '{{newUser}}' to mongo DB"
+#
+#    
+#    - name: Add user
+#      mongodb_user:
+#        login_host: "{{mongoHost}}"
+#        login_user: "{{mongoUser}}"
+#        login_password: "{{mongoPass}}"
+#        database: "{{mongoDB}}"
+#        name: "{{newUser}}"
+#        password: "{{newPass}}"
+#        roles: read
+#        state: present
+#
+#- name: mongoAdmin
+#  hosts: localhost
+##  hosts: all
+#  tags: mongoAdmin
+#  vars:
+#    ansible_python_interpreter: /bin/python3
+#  tasks:
+#    - debug:
+#        msg: "Giving user '{{newUser}}' all pgre table perms"
+#
+#    - name: "Add admin access"
+#      postgresql_privs:
+#        type: table
+#        database: "{{pgrDB}}"
+#        objs: "{{pgrTable}}"
+#        login_host: "{{pgreHost}}"
+#        login_user: "{{pgreUser}}"
+#        login_password: "{{pgrePass}}"
+#        roles: "{{newUser}}"
+#        password: "{{newPass}}"
+#        grant_option: no
+#        privs: all

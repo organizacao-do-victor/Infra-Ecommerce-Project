@@ -168,17 +168,6 @@
         login_password: "{{pgrePass}}"
       when: "'db' in group_names"
       delegate_to: localhost
-    
-    - name: "test db"
-      tags: db
-      postgresql_query:
-        db: "{{pgrDB}}"	
-        query: "INSERT INTO {{pgrTable}}(sku, product_name, description, price, quantity, image_link) VALUES (uuid_generate_v4(), 'cigarro', 'Faz bem', 9.50, 1, 's3://ecommerce-as4d4ewf4wsaxasf5ergsax4er62d/79f8c29dfb6f-448d-9a99-f02ca6e7dd86.webp')"
-        login_host: "{{pgreHost}}"
-        login_user: "{{pgreUser}}"
-        login_password: "{{pgrePass}}"
-      when: "'db' in group_names"
-      delegate_to: localhost
 
 
 

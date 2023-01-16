@@ -76,6 +76,10 @@ with open('ansible/remote-files/ansible-vars.yaml', 'w+') as file:
 	file.write('pgrDB: {}\n'.format(dic['pgreDB']))
 	file.write('pgrTable: {}\n'.format(dic['pgreTable']))
 	file.write('pgrePass: {}\n'.format(dic['pgrePass']))
+	file.write('mongoHost: {}\n'.format(dic['Databases-Public-IP']))
+	file.write('mongoUser: {}\n'.format(dic['mongoUser']))
+	file.write('mongoDB: {}\n'.format(dic['mongoDB']))
+	file.write('mongoPass: {}\n'.format(dic['mongoPass']))
 
 ######################
 #	S3 BUCKET NAME

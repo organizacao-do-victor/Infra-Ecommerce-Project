@@ -1,0 +1,19 @@
+if [ "$1" = "" ] || [ "$2" = "" ] || [ "$3" = "" ]; then 
+	echo sh addUser [user] [pass] [pgre/mongo]
+else 
+	if [ "$3" = "pgre" ]; then
+		if [ "$4" = "admin" ]; then
+			ansible-playbook dbUser.yml --extra-vars "{'newUser':'$1','newPass':'$2'}" --tags pgre,pgreAdmin -i hosts
+		else
+			ansible-playbook dbUser.yml --extra-vars "{'newUser':'$1','newPass':'$2'}" --tags pgre -i hosts
+		fi
+	else 
+		if [ "$3" = "mongo" ]; then
+			if [ "$4" = "admin" ]; then
+				ansible-playbook dbUser.yml --extra-vars "{'newUser':'$1','newPass':'$2'}" --tags mongo,mongoAdmin -i hosts
+			else
+				ansible-playbook dbUser.yml --extra-vars "{'newUser':'$1','newPass':'$2'}" --tags mongo -i hosts
+			fi
+		fi
+	fi
+fi

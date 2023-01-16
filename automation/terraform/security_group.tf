@@ -19,6 +19,22 @@ resource "aws_security_group" "front-app-sg" {
   }
 
   ingress {
+    description = "Front http port"
+    from_port   = 3000
+    to_port     = 3000
+    protocol    = "tcp"
+    cidr_blocks = [var.MYANYWHERE]
+  }
+
+  ingress {
+    description = "Back http port"
+    from_port   = 5000
+    to_port     = 5000
+    protocol    = "tcp"
+    cidr_blocks = [var.MYANYWHERE]
+  }
+
+  ingress {
     description = "Prometheus port"
     from_port   = 9100
     to_port     = 9100
