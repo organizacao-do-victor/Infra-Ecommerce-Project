@@ -31,8 +31,9 @@ export default function ProductsList() {
         products.map((item, key) => (
           <Grid>
             <CardWrapper key={key} >
+              <img key={'image'} src={item.image_link} alt="BigCo Inc. logo"/>
               <CardHeader>
-                  <CardHeading> {item.name}</CardHeading>
+                  <CardHeading> {item.product_name}</CardHeading>
                 </CardHeader>
                 <CardBody>
                   <CardFieldset> 
