@@ -28,9 +28,9 @@ async function startServer() {
   })
 
   // -- Mongo
-  console.log("Connecting to MongoDB user database...")
-  await connectToMongo()
-  console.log("Connected to MongoDB user database.")
+  // console.log("Connecting to MongoDB user database...")
+  // await connectToMongo()
+  // console.log("Connected to MongoDB user database.")
 
   // -- Postgres
   console.log("Connecting to PostgreSQL product database...")

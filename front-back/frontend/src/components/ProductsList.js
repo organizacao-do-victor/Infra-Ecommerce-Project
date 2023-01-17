@@ -2,11 +2,12 @@ import React, { useState, useEffect, }from 'react';
 import { Link } from 'react-router-dom';
 import axios from 'axios';
 import { CardWrapper, CardHeader, CardHeading, CardBody, CardFieldset, Grid } from './Card.style';
+import { API } from '../back'
 
 export default function ProductsList() {
   const [products, setProducts] = useState([]);
 
-  const url = 'http://44.193.94.210:5000/products'
+  const url = `http://${API}:5000/products`
 
   const getAllProducts = () => {
     axios.get(url)
@@ -30,8 +31,9 @@ export default function ProductsList() {
         products.map((item, key) => (
           <Grid>
             <CardWrapper key={key} >
+              <img key={'image'} src={item.image_link} alt="BigCo Inc. logo"/>
               <CardHeader>
-                  <CardHeading> {item.name}</CardHeading>
+                  <CardHeading> {item.product_name}</CardHeading>
                 </CardHeader>
                 <CardBody>
                   <CardFieldset> 
