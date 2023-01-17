@@ -7,8 +7,8 @@
   tasks:
     - name: read db vars
       tags: db
-#      include_vars: /home/{{ ansible_user }}/remote-files/ansible-vars.yaml
-      include_vars: ansible-vars.yaml
+      include_vars: /home/ubuntu/remote-files/ansible-vars.yaml
+#      include_vars: ansible-vars.yaml
 
     - name: "test db"
       tags: db

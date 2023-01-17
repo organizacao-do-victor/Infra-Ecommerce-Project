@@ -248,3 +248,20 @@
 
     - debug:
         var: ansible.stdout_lines
+
+
+############
+# Test db 
+############
+- name: Run ansible test values
+  hosts: all
+  tags: test
+  tasks:
+    - name: Run ansible
+      shell: "ansible-playbook dbProdInit.yml"
+      register: ansible
+      args:
+       chdir: /home/{{ ansible_user }}/ecommerce/test
+
+    - debug:
+        var: ansible.stdout_lines
