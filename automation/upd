@@ -1,0 +1,21 @@
+date
+#cd to terraform folder
+cd terraform && \
+#Waits for confirmation, -auto-approve removes it
+terraform apply && \
+#save outputs to file
+terraform output > ../output && \
+#cds out
+cd .. && \
+
+#format ansible hosts and other files from output
+python3 format.py -ng && \
+
+#ansible
+cd ansible && \
+ansible-playbook playbookLH.yml -i hosts --private-key ../terraform/ecommerce-key && \
+cd ..
+date
+cd terraform
+terraform output Front-App-Public-IP
+cd ..
