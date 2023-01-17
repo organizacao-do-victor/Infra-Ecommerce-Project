@@ -2,6 +2,7 @@ import React, { useState, useEffect, }from 'react';
 import { Link } from 'react-router-dom';
 import axios from 'axios';
 import { CardWrapper, CardHeader, CardHeading, CardBody, CardFieldset, Grid } from './Card.style';
+import './Styles/Login.style.css';
 
 export default function ProductsList() {
   const [products, setProducts] = useState([]);
@@ -12,6 +13,7 @@ export default function ProductsList() {
     axios.get(url)
     .then((response) => {
       setProducts(response.data);
+    
     })
     .catch(function(error){
       console.log(error);

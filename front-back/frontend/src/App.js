@@ -1,6 +1,5 @@
 import React from 'react';
 import './App.css';
-import LoginScreen from './components/LoginScreen';
 import ProductsList from './components/ProductsList';
 import { BrowserRouter as Router, Routes , Route} from 'react-router-dom';
 
