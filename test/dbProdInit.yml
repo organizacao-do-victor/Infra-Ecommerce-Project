@@ -1,0 +1,29 @@
+- name: pgreTest
+  hosts: localhost
+#  hosts: all
+  tags: pgre
+  tasks:
+    - name: Reading s3 file
+      shell: "cat ~/remote-files/s3"
+      register: s3Out
+
+    - name: Setting vars
+      set_fact: 
+        s3Bucket: "{{s3Out.stdout}}"
+
+    - debug:
+        msg: "S3 Bucket {{s3Bucket}}"
+
+    - name: Read db vars
+      tags: db
+      include_vars: /home/ubuntu/remote-files/ansible-vars.yaml
+
+    - name: "test db"
+      tags: db
+      postgresql_query:
+        db: "{{pgrDB}}"	
+        query: "INSERT INTO {{pgrTable}} VALUES (uuid_generate_v4(), 'Air Fryer', 'Frita, Assa e Gratina sem Óleo e com toda a Facilidade.', 399.99, 1, '{{s3Bucket}}/1.jpg'),(uuid_generate_v4(), 'Tênis Esportivo Masculino', 'Conforto e Estilo para o seu dia a dia.', 203.99, 1, '{{s3Bucket}}/2.jpg'),(uuid_generate_v4(), 'Telefone Celular', 'Desbloqueio facial e de impressão digital.', 1776.67, 1, '{{s3Bucket}}/3.jpg'),(uuid_generate_v4(), 'TV Led', 'TV Led chegou para ficar, devido a sua praticidade e aos inúmeros recursos incríveis que você consegue acessar.', 1269.00, 1, '{{s3Bucket}}/4.jpg'),(uuid_generate_v4(), 'Notebook IdeaPad', 'Qualquer tarefa que você proponha, seja em casa ou na oficina, você fará isso com facilidade graças ao seu poderoso desempenho.', 2798.00, 1, '{{s3Bucket}}/5.jpg'),(uuid_generate_v4(), 'Bicicleta', 'Bicicleta com freio a disco desenvolvida para passeios e um bom começo nas primeiras trilhas da categoria MTB.', 1348.64, 1, '{{s3Bucket}}/6.jpg'),(uuid_generate_v4(), 'Kit Com 12 Cuecas', 'Ideal para elevar o seu nível de conforto!', 137.50, 1, '{{s3Bucket}}/7.jpg'),(uuid_generate_v4(), 'Fone de Ouvido', 'Sendo on-ear, descansam confortavelmente nos seus ouvidos e oferecem uma ótima qualidade de som.', 217.90, 1, '{{s3Bucket}}/8.jpg'),(uuid_generate_v4(), 'SmartWatch', 'Monitor de saturação do oxigênio no sangue.', 899.00, 1, '{{s3Bucket}}/9.jpg'),(uuid_generate_v4(), 'Piscina Inflável', 'Fácil montar e manter, a piscina inflável, é a melhor opção para 0se refrescar com a família e amigos.', 154.64, 1, '{{s3Bucket}}/10.jpg'),(uuid_generate_v4(), 'Cadeira Escritório', 'A escolha de uma cadeira adequada é muito importante para evitar futuras lesões.', 299.94, 1, '{{s3Bucket}}/11.jpg'),(uuid_generate_v4(), 'Violão', 'Com este instrumento você vai descobrir novos acordes, cantar suas canções e vai desfrutar da vida musical.', 296.00, 1, '{{s3Bucket}}/12.jpg'), (uuid_generate_v4(), 'Tapete', 'Tapete Sala Peludo.', 88.91, 1, '{{s3Bucket}}/13.jpg'),(uuid_generate_v4(), 'Robô Aspirador', 'Ter um aspirador de pó robô vai lhe permitir economizar tempo e esforço.', 409.90, 1, '{{s3Bucket}}/14.jpg'),(uuid_generate_v4(), 'Camera de Segurança', 'Você não precisará mais se preocupar com a vigilância de sua casa ou empresa.', 239.90, 1, '{{s3Bucket}}/15.jpg')"
+        login_host: "{{pgreHost}}"
+        login_user: "{{pgreUser}}"
+        login_password: "{{pgrePass}}"
+      delegate_to: localhost

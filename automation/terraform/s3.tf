@@ -15,3 +15,12 @@ resource "aws_s3_bucket_public_access_block" "ecommerce" {
   ignore_public_acls      = false
   restrict_public_buckets = false
 }
+
+resource "aws_s3_bucket_object" "object1" {
+	for_each = fileset("../../test/img", "*")
+	bucket = aws_s3_bucket.ecommerce.id
+	key = each.value
+	source = "../../test/img/${each.value}"
+	etag = filemd5("../../test/img/${each.value}")
+	acl = "public-read"
+}

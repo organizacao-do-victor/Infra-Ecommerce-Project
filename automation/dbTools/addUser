@@ -7,13 +7,5 @@ else
 		else
 			ansible-playbook dbUser.yml --extra-vars "{'newUser':'$1','newPass':'$2'}" --tags pgre -i hosts
 		fi
-	else 
-		if [ "$3" = "mongo" ]; then
-			if [ "$4" = "admin" ]; then
-				ansible-playbook dbUser.yml --extra-vars "{'newUser':'$1','newPass':'$2'}" --tags mongo,mongoAdmin -i hosts
-			else
-				ansible-playbook dbUser.yml --extra-vars "{'newUser':'$1','newPass':'$2'}" --tags mongo -i hosts
-			fi
-		fi
 	fi
 fi

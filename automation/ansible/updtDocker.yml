@@ -1,0 +1,36 @@
+- name: docker restart
+  strategy: free
+  hosts: all
+  tasks:    
+    - name: Restart db docker 
+      tags: db
+      become: yes
+      community.docker.docker_compose:
+        project_src: /home/{{ ansible_user }}/banco
+        build: false
+        env_file: /home/{{ ansible_user }}/banco/.env #require .env file
+        recreate: "always"
+        remove_orphans : true
+        recreate: "always"
+      register: output
+      when: "'db' in group_names"
+
+    - name: Restart grafana docker
+      become: true
+      tags: log
+      docker_compose:
+        project_src: /home/{{ ansible_user }}/monitoring
+        state: present
+        recreate: "always"
+      when: "'grafana' in group_names"
+
+    - name: Restart front-back docker
+      tags: app
+      become: yes
+      community.docker.docker_compose:
+        project_src: /home/{{ ansible_user }}/front-back
+        build: true
+        recreate: "always"
+        remove_orphans : true
+      register: output
+      when: "'front-back' in group_names"

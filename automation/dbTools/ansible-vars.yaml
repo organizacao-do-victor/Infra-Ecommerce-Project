@@ -1,0 +1,9 @@
+pgreHost: 3.83.44.18
+pgreUser: postgres
+pgrDB: products
+pgrTable: product
+pgrePass: yt6y0RSKcA6GDKtNceW89QphGRgsqHbY
+mongoHost: 3.83.44.18
+mongoUser: QTFsLdtwnnaJTzOKuR3WIXVxXO6E4EOp
+mongoDB: backend-db
+mongoPass: 8lxbqbDKjFhPXQYW3b0h8O9JMw4jvsIL

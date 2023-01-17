@@ -1,5 +1,6 @@
 import string
 import secrets
+import sys 
 
 #####################
 #	RANDOM STRINGS
@@ -14,13 +15,27 @@ def generateRandom():
 #####################
 dic = {}
 dic['pgreUsr']='postgres'
-dic['pgrePass']=generateRandom()
 dic['pgrePort']='5432'
 dic['pgreDB']='products'
 dic['pgreTable']='product'
-dic['mongoUser']=generateRandom()
-dic['mongoPass']=generateRandom()
 dic['mongoDB']='backend-db'
+
+#don't generate new on update
+generate = True
+if(len(sys.argv) > 1):
+	if(sys.argv[1] == '-ng'):
+		generate = False
+
+if(generate):
+	dic['pgrePass']=generateRandom()
+	dic['mongoUser']=generateRandom()
+	dic['mongoPass']=generateRandom()
+else:
+	with open('ansible/remote-files/dbenv') as file:
+		for line in file:
+			k,v = line.strip().split('=',2)
+			if k in ('pgrePass', 'mongoUser', 'mongoPass'):
+				dic[k] = v
 
 ########################
 #	READ FROM TERRAFORM
