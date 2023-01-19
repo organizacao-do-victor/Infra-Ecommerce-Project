@@ -7,7 +7,7 @@ export const Grid = styled.div`
 `;
 
 export const CardWrapper = styled.div`
-  overflow: hidden;
+  overflow: scroll;
   padding: 0 0 32px;
   margin: 48px auto 0;
   width: 300px;
