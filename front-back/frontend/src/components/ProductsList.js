@@ -31,7 +31,7 @@ export default function ProductsList() {
         products.map((item, key) => (
           <Grid>
             <CardWrapper key={key} >
-              <img key={'image'} src={'https://' + item.image_link} alt='image' width='100%'/>
+              <img key={'image'} src={'https://' + item.image_link} alt='image' width='100%' height='300px' style={{'object-fit': "contain"}}/>
               <CardHeader>
                   <CardHeading> {item.product_name}</CardHeading>
                 </CardHeader>
