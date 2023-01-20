@@ -25,10 +25,11 @@ export default function ProductsList() {
 
   return (
     <>
-    <div style={{'margin-left': '20px'}}>
+    <div style={{'margin-left': '5%'}}>
         <h1>Product List</h1>
         <Link to="/">Voltar para tela Inicial</Link>
     </div>
+	<div style={{'text-align': 'center'}}>
     {products.length ? (
         products.map((item, key) => (
           <Grid>
@@ -57,6 +58,7 @@ export default function ProductsList() {
           <li>Products not found.</li>
         </section>
       )}
+    </div>
 
     </>
   )
