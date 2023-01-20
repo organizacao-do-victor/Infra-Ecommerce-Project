@@ -154,8 +154,14 @@ with open('ansible/remote-files/awsconfig', 'w+') as file:
 with open('prometheus.yml.template') as template:
 	with open('ansible/remote-files/prometheus.yml', 'w+') as file:
 		for line in template:
-			if('{{EC2 IPS}}' in line):
-				ips = "'" + dic['Front-App-Public-IP'] +":9100', '"+ dic['Ansible-Public-IP'] +":9100', '"+dic['Databases-Public-IP'] + ":9100'"
-				file.write(line.replace('{{EC2 IPS}}', ips))
+			if('{{ANSIBLE IP}}' in line):
+				ip = "'" + dic['Ansible-Public-IP'] + ":9100'"
+				file.write(line.replace('{{ANSIBLE IP}}', ip))
+			elif('{{FRONT-BACK IP}}' in line):
+				ip = "'" + dic['Front-App-Public-IP'] + ":9100'"
+				file.write(line.replace('{{FRONT-BACK IP}}', ip))
+			elif('{{DB IP}}' in line):
+				ip = "'" + dic['Databases-Public-IP'] + ":9100'"
+				file.write(line.replace('{{DB IP}}', ip))
 			else:
 				file.write(line)
