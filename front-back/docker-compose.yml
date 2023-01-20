@@ -3,15 +3,20 @@ version : "3.7"
 services:
   front:
     container_name: front
-    build: frontend
+    #build: frontend
+    image: "${awsRepo}/frontend:latest"
     restart: always
     volumes:
       - ./frontend/src/back.js:/app/src/back.js
+      - ./frontend/.env:/app/.env
     ports:
      - "3000:3000"
 
   back:
     container_name: back
-    build: backend
+    #build: backend
+    image: "${awsRepo}/backend:latest"
+    volumes:
+      - ./backend/.env:/app/.env
     ports:
       - "5000:5000"
