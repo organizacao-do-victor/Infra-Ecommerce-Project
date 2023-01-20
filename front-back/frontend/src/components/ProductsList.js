@@ -25,8 +25,10 @@ export default function ProductsList() {
 
   return (
     <>
-    <h1>Product List</h1>
-    <Link to="/">Voltar para tela Inicial</Link>
+    <div style={{'margin-left': '20px'}}>
+        <h1>Product List</h1>
+        <Link to="/">Voltar para tela Inicial</Link>
+    </div>
     {products.length ? (
         products.map((item, key) => (
           <Grid>
