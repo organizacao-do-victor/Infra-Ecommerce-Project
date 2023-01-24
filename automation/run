@@ -26,5 +26,5 @@ ansible-playbook playbookLH.yml -i hosts --private-key ../terraform/ecommerce-ke
 cd ..
 date
 cd terraform
-terraform output Front-App-Public-IP
+terraform output Nginx-Public-IP
 cd ..
