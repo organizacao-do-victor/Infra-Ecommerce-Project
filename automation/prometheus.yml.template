@@ -23,9 +23,15 @@ scrape_configs:
        - targets: [{{ANSIBLE IP}}]
          labels:
            instance: ansible
+       - targets: [{{NGINX IP}}]
+         labels:
+           instance: Nginx
        - targets: [{{FRONT-BACK IP}}]
          labels:
            instance: Front-Back
+       - targets: [{{APP-HS IP}}]
+         labels:
+           instance: Front-Back-HS
        - targets: [{{DB IP}}]
          labels:
            instance: DB

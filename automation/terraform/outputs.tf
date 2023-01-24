@@ -2,9 +2,14 @@ output "Bucket-name" {
   value = aws_s3_bucket.ecommerce.bucket_domain_name
 }
 
-
+output "Nginx-Public-IP" {
+  value = aws_instance.nginx-project.public_ip
+}
 output "Front-App-Public-IP" {
   value = aws_instance.front-app-project.public_ip
+}
+output "Front-App-HS-Public-IP" {
+  value = aws_instance.front-app-hs-project.public_ip
 }
 output "Grafana-Public-IP" {
   value = aws_instance.grafana-project.public_ip

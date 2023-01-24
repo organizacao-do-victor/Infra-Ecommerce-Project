@@ -58,24 +58,28 @@
     #	AWS ECR login
     #################
     - name: Read repo file
+      tags: ecr
       ansible.builtin.shell: "cat ~/remote-files/repo"
       register: repofile
       delegate_to: localhost
       run_once: true
 
     - name: Set repo
+      tags: ecr
       set_fact:
         aws_ECR_URL: "{{ repofile.stdout }}"    
       delegate_to: localhost
       run_once: true
 
     - name: Get aws password
+      tags: ecr
       ansible.builtin.shell: "aws ecr get-login-password"
       register: awsPass
       delegate_to: localhost
       run_once: true
 
     - name: Docker login
+      tags: ecr
       become: yes
       community.docker.docker_login:
         registry_url: "{{ aws_ECR_URL }}"
@@ -211,30 +215,61 @@
         state: present
       when: "'grafana' in group_names"
 
+    #################
+    #	Nginx
+    ################
+    - name: copying nginx files
+      tags: lb
+      copy:
+        src: /home/{{ ansible_user }}/ecommerce/nginx
+        dest: /home/{{ ansible_user }}
+      when: "'nginx' in group_names"
+
+    - name: copying nginx conf
+      tags: lb
+      copy:
+        src: /home/{{ ansible_user }}/remote-files/nginx.conf
+        dest: /home/{{ ansible_user }}/nginx/nginx.conf
+      when: "'nginx' in group_names"
+
+    - name: running docker
+      tags: lb
+      become: yes
+      community.docker.docker_compose:
+        project_src: /home/{{ ansible_user }}/nginx
+        recreate: "always"
+        remove_orphans : true
+      register: output
+      when: "'nginx' in group_names"
+
+    - debug:
+        var: output
+      tags: lb
+      when: "'nginx' in group_names"
 
     #################
     #	Front/Back app
-    ################
-    - name: copying db files
+     ################
+    - name: copying front files
       tags: app
       copy:
         src: /home/{{ ansible_user }}/ecommerce/front-back
         dest: /home/{{ ansible_user }}
-      when: "'front-back' in group_names"
+      when: "'front-back' in group_names or 'app-hs' in group_names"
 
     - name: copying docker clean script
       tags: app
       copy:
         src: /home/{{ ansible_user }}/remote-files/clean
         dest: /home/{{ ansible_user }}/front-back/clean
-      when: "'front-back' in group_names"
+      when: "'front-back' in group_names or 'app-hs' in group_names"
 
     - name: copying back to front
       tags: app
       copy:
         src: /home/{{ ansible_user }}/remote-files/frontenv
         dest: /home/{{ ansible_user }}/front-back/.env
-      when: "'front-back' in group_names"
+      when: "'front-back' in group_names or 'app-hs' in group_names"
 
     - name: copying back to front
       tags: app
@@ -243,20 +278,38 @@
         dest: /home/{{ ansible_user }}/front-back/frontend/src/back.js
       when: "'front-back' in group_names"
 
+    - name: copying back to HS
+      tags: app
+      copy:
+        src: /home/{{ ansible_user }}/remote-files/backHS.js
+        dest: /home/{{ ansible_user }}/front-back/frontend/src/back.js
+      when: "'app-hs' in group_names"
+
     - name: copying .env to front
       tags: app
       copy:
         src: /home/{{ ansible_user }}/remote-files/dotenv
         dest: /home/{{ ansible_user }}/front-back/frontend/.env
-      when: "'front-back' in group_names"
+      when: "'front-back' in group_names or 'app-hs' in group_names"
 
     - name: copying .env to front
       tags: app
       copy:
         src: /home/{{ ansible_user }}/remote-files/dotenv
         dest: /home/{{ ansible_user }}/front-back/backend/.env
-      when: "'front-back' in group_names"
+      when: "'front-back' in group_names or 'app-hs' in group_names"
 
+#    - name: Pulling images on HS
+#      tags: app
+#      become: yes
+#      community.docker.docker_compose:
+#        project_src: /home/{{ ansible_user }}/front-back
+#        pull: true
+#        state: absent
+#        remove_orphans : true
+#      register: output
+#      when: "'app-hs' in group_names"
+#
     - name: running docker
       tags: app
       become: yes
@@ -266,7 +319,8 @@
         recreate: "always"
         remove_orphans : true
       register: output
-      when: "'front-back' in group_names"
+      #when: "'front-back' in group_names"
+      when: "'front-back' in group_names or 'app-hs' in group_names"
 
     - debug:
         var: output

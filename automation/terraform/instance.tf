@@ -14,6 +14,18 @@ resource "aws_key_pair" "key_pair" {
 }
 
 
+resource "aws_instance" "nginx-project" {
+  ami                    = var.AMIS[var.REGION]
+  instance_type          = "t2.micro"
+  subnet_id              = aws_subnet.ecommerce-project-pub-1.id
+  key_name               = aws_key_pair.key_pair.key_name
+  vpc_security_group_ids = [aws_security_group.front-app-sg.id]
+  tags = {
+    Name    = "nginx-project"
+    Project = "ecommerce-project"
+  }
+}
+
 resource "aws_instance" "front-app-project" {
   ami                    = var.AMIS[var.REGION]
   instance_type          = "t2.small"
@@ -22,6 +34,19 @@ resource "aws_instance" "front-app-project" {
   vpc_security_group_ids = [aws_security_group.front-app-sg.id]
   tags = {
     Name    = "front-app-project"
+    Project = "ecommerce-project"
+  }
+}
+
+
+resource "aws_instance" "front-app-hs-project" {
+  ami                    = var.AMIS[var.REGION]
+  instance_type          = "t2.small"
+  subnet_id              = aws_subnet.ecommerce-project-pub-1.id
+  key_name               = aws_key_pair.key_pair.key_name
+  vpc_security_group_ids = [aws_security_group.front-app-sg.id]
+  tags = {
+    Name    = "front-app-hs-project"
     Project = "ecommerce-project"
   }
 }
