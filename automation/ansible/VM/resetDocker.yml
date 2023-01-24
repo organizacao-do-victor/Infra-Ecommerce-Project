@@ -1,0 +1,58 @@
+- name: docker installation
+  strategy: free
+  hosts: all
+  vars:
+    ansible_python_interpreter: /bin/python3
+  tasks:    
+    - name: running db docker
+      tags: db
+      become: yes
+      community.docker.docker_compose:
+        project_src: /home/{{ ansible_user }}/banco
+        build: false
+        env_file: /home/{{ ansible_user }}/banco/.env #require .env file
+        recreate: "always"
+        remove_orphans : true
+      register: output
+      when: "'db' in group_names"
+
+    - name: running grafana docker
+      become: true
+      tags: log
+      docker_compose:
+        project_src: /home/{{ ansible_user }}/monitoring
+        state: present
+      when: "'grafana' in group_names"
+
+    - name: running nginx docker
+      tags: nginx
+      become: yes
+      community.docker.docker_compose:
+        project_src: /home/{{ ansible_user }}/nginx
+        recreate: "always"
+        remove_orphans : true
+      register: output
+      when: "'nginx' in group_names"
+
+    - name: running app docker
+      tags: app
+      become: yes
+      community.docker.docker_compose:
+        project_src: /home/{{ ansible_user }}/front-back
+        build: true
+        recreate: "always"
+        remove_orphans : true
+      register: output
+      when: "'front-back' in group_names"
+
+    - name: running docker
+      tags: hs
+      become: yes
+      community.docker.docker_compose:
+        project_src: /home/{{ ansible_user }}/front-back
+        build: true
+        recreate: "always"
+        remove_orphans : true
+      register: output
+      when: "'app-hs' in group_names"
+
