@@ -13,6 +13,8 @@ def generateRandom():
 ######################
 #	HARDCODED VALUES
 #####################
+FRONTPORT = '3000'
+PROMETHEUSPORT = '9100'
 dic = {}
 dic['pgreUsr']='postgres'
 dic['pgrePort']='5432'
@@ -24,6 +26,7 @@ dic['mongoDB']='backend-db'
 generate = True
 if(len(sys.argv) > 1):
 	if(sys.argv[1] == '-ng'):
+		print('generation disabled')
 		generate = False
 
 if(generate):
@@ -79,9 +82,12 @@ with open('ansible/remote-files/repo', 'w+') as file:
 #	ANSIBLEVM HOSTS
 #####################
 with open('ansible/remote-files/hosts', 'w+') as file:
+	file.write('[nginx]\n{} ansible_user=ubuntu\n'.format(dic['Nginx-Public-IP']))
 	file.write('[front-back]\n{} ansible_user=ubuntu\n'.format(dic['Front-App-Public-IP']))
+	file.write('[app-hs]\n{} ansible_user=ubuntu\n'.format(dic['Front-App-HS-Public-IP']))
 	file.write('[grafana]\n{} ansible_user=ubuntu\n'.format(dic['Grafana-Public-IP']))
 	file.write('[db]\n{} ansible_user=ubuntu\n'.format(dic['Databases-Public-IP']))
+
 ######################
 #	ANSIBLEVM VARS
 #####################
@@ -129,6 +135,9 @@ with open('ansible/remote-files/frontenv', 'w+') as file:
 with open('ansible/remote-files/back.js', 'w+') as file:
 	file.write('const API = "{}"\n'.format(dic['Front-App-Public-IP']))
 	file.write('module.exports = {\n\tAPI\n}')
+with open('ansible/remote-files/backHS.js', 'w+') as file:
+	file.write('const API = "{}"\n'.format(dic['Front-App-HS-Public-IP']))
+	file.write('module.exports = {\n\tAPI\n}')
 
 ######################
 #	DB .ENV
@@ -155,13 +164,37 @@ with open('prometheus.yml.template') as template:
 	with open('ansible/remote-files/prometheus.yml', 'w+') as file:
 		for line in template:
 			if('{{ANSIBLE IP}}' in line):
-				ip = "'" + dic['Ansible-Public-IP'] + ":9100'"
+				ip = "'" + dic['Ansible-Public-IP'] + ":" + PROMETHEUSPORT + "'"
 				file.write(line.replace('{{ANSIBLE IP}}', ip))
 			elif('{{FRONT-BACK IP}}' in line):
-				ip = "'" + dic['Front-App-Public-IP'] + ":9100'"
+				ip = "'" + dic['Front-App-Public-IP'] + ":" + PROMETHEUSPORT + "'"
 				file.write(line.replace('{{FRONT-BACK IP}}', ip))
+			elif('{{APP-HS IP}}' in line):
+				ip = "'" + dic['Front-App-HS-Public-IP'] + ":" + PROMETHEUSPORT + "'"
+				file.write(line.replace('{{APP-HS IP}}', ip))
 			elif('{{DB IP}}' in line):
-				ip = "'" + dic['Databases-Public-IP'] + ":9100'"
+				ip = "'" + dic['Databases-Public-IP'] + ":" + PROMETHEUSPORT + "'"
 				file.write(line.replace('{{DB IP}}', ip))
+			elif('{{NGINX IP}}' in line):
+				ip = "'" + dic['Nginx-Public-IP'] + ":" + PROMETHEUSPORT + "'"
+				file.write(line.replace('{{NGINX IP}}', ip))
 			else:
 				file.write(line)
+
+#######################
+#	NGINX.CONF
+######################
+with open('nginx.conf.template') as template:
+	with open('ansible/remote-files/nginx.conf', 'w+') as file:
+		for line in template:
+			if('{{FRONT}}' in line):
+				ip = dic['Front-App-Public-IP'] + ":" + FRONTPORT
+				file.write(line.replace('{{FRONT}}', ip))
+			elif('{{HS}}' in line):
+				ip = dic['Front-App-HS-Public-IP'] + ":" + FRONTPORT
+				file.write(line.replace('{{HS}}', ip))
+			else:
+				file.write(line)
+
+
+

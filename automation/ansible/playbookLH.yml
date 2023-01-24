@@ -139,6 +139,13 @@
         username: AWS
         password: "{{awsPass.stdout}}"
 
+    - name: Pulling nginx image
+      become: yes
+      community.docker.docker_image:
+        name: nginx
+        source: pull
+        pull:
+
     - name: Pulling postgres image
       become: yes
       community.docker.docker_image:
@@ -175,6 +182,7 @@
       community.docker.docker_image:
         name: postgres
         repository: "{{aws_ECR_URL}}/postgres:latest"
+        force_tag: true
         push: true
         source: local
 
@@ -183,6 +191,7 @@
       community.docker.docker_image:
         name: mongo
         repository: "{{aws_ECR_URL}}/mongo:latest"
+        force_tag: true
         push: true
         source: local
 
@@ -191,6 +200,7 @@
       community.docker.docker_image:
         name: frontend
         repository: "{{aws_ECR_URL}}/frontend:latest"
+        force_tag: true
         push: true
         source: local
 
@@ -199,6 +209,16 @@
       community.docker.docker_image:
         name: backend
         repository: "{{aws_ECR_URL}}/backend:latest"
+        force_tag: true
+        push: true
+        source: local
+
+    - name: Pushing nginx
+      become: yes
+      community.docker.docker_image:
+        name: nginx
+        repository: "{{aws_ECR_URL}}/nginx:latest"
+        force_tag: true
         push: true
         source: local
     
