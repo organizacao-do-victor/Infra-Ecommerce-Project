@@ -39,8 +39,7 @@
     - name: Install pip
       tags: dep
       become: yes
-      apt:
-        name: python3-pip
+      shell: "wget https://bootstrap.pypa.io/get-pip.py && python3 get-pip.py"
 
     - name: Install python docker libs
       tags: dep
