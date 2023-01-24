@@ -224,6 +224,13 @@
         dest: /home/{{ ansible_user }}
       when: "'nginx' in group_names"
 
+    - name: copying docker env to nginx
+      tags: app
+      copy:
+        src: /home/{{ ansible_user }}/remote-files/frontenv
+        dest: /home/{{ ansible_user }}/nginx/.env
+      when: "'nginx' in group_names"
+
     - name: copying nginx conf
       tags: lb
       copy:
@@ -263,7 +270,7 @@
         dest: /home/{{ ansible_user }}/front-back/clean
       when: "'front-back' in group_names or 'app-hs' in group_names"
 
-    - name: copying back to front
+    - name: copying docker env to front
       tags: app
       copy:
         src: /home/{{ ansible_user }}/remote-files/frontenv
@@ -291,7 +298,7 @@
         dest: /home/{{ ansible_user }}/front-back/frontend/.env
       when: "'front-back' in group_names or 'app-hs' in group_names"
 
-    - name: copying .env to front
+    - name: copying .env to back
       tags: app
       copy:
         src: /home/{{ ansible_user }}/remote-files/dotenv
