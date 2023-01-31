@@ -1,0 +1,10 @@
+[nginx]
+54.226.90.159 ansible_user=ubuntu
+[front-back]
+3.80.125.212 ansible_user=ubuntu
+[app-hs]
+54.82.36.205 ansible_user=ubuntu
+[grafana]
+50.17.146.116 ansible_user=ubuntu
+[db]
+54.221.81.138 ansible_user=ubuntu

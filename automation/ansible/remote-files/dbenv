@@ -1,0 +1,7 @@
+pgreUser=postgres
+pgrePass=oOyhIQM6Sj3g0zDMEnagp3qVngKxYmgL
+pgreDB=products
+mongoUser=DbwQIS1H7izFopFG90yFTtsNNAljOFEg
+mongoPass=4w3zpvQiuVS35y7QaYACRYIu2u18UpDg
+mongoDB=backend-db
+awsRepo=741692307640.dkr.ecr.us-east-1.amazonaws.com

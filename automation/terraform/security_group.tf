@@ -11,6 +11,14 @@ resource "aws_security_group" "front-app-sg" {
   }
 
   ingress {
+    description = "HTTP Anywhere"
+    from_port   = 80
+    to_port     = 80
+    protocol    = "tcp"
+    cidr_blocks = [var.MYANYWHERE]
+  }
+
+  ingress {
     description = "SSH Anywhere"
     from_port   = 22
     to_port     = 22

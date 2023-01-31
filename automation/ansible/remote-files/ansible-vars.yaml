@@ -1,0 +1,9 @@
+pgreHost: 54.221.81.138
+pgreUser: postgres
+pgrDB: products
+pgrTable: product
+pgrePass: oOyhIQM6Sj3g0zDMEnagp3qVngKxYmgL
+mongoHost: 54.221.81.138
+mongoUser: DbwQIS1H7izFopFG90yFTtsNNAljOFEg
+mongoDB: backend-db
+mongoPass: 4w3zpvQiuVS35y7QaYACRYIu2u18UpDg

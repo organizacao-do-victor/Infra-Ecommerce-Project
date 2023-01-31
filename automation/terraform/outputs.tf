@@ -22,9 +22,9 @@ output "Ansible-Public-IP" {
 }
 
 output "AWS-ID" {
-	value = data.aws_caller_identity.current.account_id
+  value = data.aws_caller_identity.current.account_id
 }
 
 output "AWS-Region" {
-	value = data.aws_region.current.name
+  value = data.aws_region.current.name
 }

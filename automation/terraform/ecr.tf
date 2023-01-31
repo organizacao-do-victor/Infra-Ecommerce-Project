@@ -1,59 +1,59 @@
 resource "aws_ecr_repository" "mongo" {
-    name = "mongo"
-    image_tag_mutability = "MUTABLE"
-    force_delete = true
+  name                 = "mongo"
+  image_tag_mutability = "MUTABLE"
+  force_delete         = true
 
-    image_scanning_configuration {
-      scan_on_push = true
-    }
+  image_scanning_configuration {
+    scan_on_push = true
+  }
 }
 
 resource "aws_ecr_repository" "nginx" {
-    name = "nginx"
-    image_tag_mutability = "MUTABLE"
-    force_delete = true
+  name                 = "nginx"
+  image_tag_mutability = "MUTABLE"
+  force_delete         = true
 
-    image_scanning_configuration {
-      scan_on_push = true
-    }
+  image_scanning_configuration {
+    scan_on_push = true
+  }
 }
 
 resource "aws_ecr_repository" "postgres" {
-    name = "postgres"
-    image_tag_mutability = "MUTABLE"
-    force_delete = true
+  name                 = "postgres"
+  image_tag_mutability = "MUTABLE"
+  force_delete         = true
 
-    image_scanning_configuration {
-      scan_on_push = true
-    }
+  image_scanning_configuration {
+    scan_on_push = true
+  }
 }
 
 resource "aws_ecr_repository" "monitoring" {
-    name = "monitoring"
-    image_tag_mutability = "MUTABLE"
-    force_delete = true
+  name                 = "monitoring"
+  image_tag_mutability = "MUTABLE"
+  force_delete         = true
 
-    image_scanning_configuration {
-      scan_on_push = true
-    }
+  image_scanning_configuration {
+    scan_on_push = true
+  }
 }
 
 resource "aws_ecr_repository" "frontend" {
-    name = "frontend"
-    image_tag_mutability = "MUTABLE"
-    force_delete = true
+  name                 = "frontend"
+  image_tag_mutability = "MUTABLE"
+  force_delete         = true
 
-    image_scanning_configuration {
-      scan_on_push = true
-    }
+  image_scanning_configuration {
+    scan_on_push = true
+  }
 }
 
 resource "aws_ecr_repository" "backend" {
-    name = "backend"
-    image_tag_mutability = "MUTABLE"
-    force_delete = true
+  name                 = "backend"
+  image_tag_mutability = "MUTABLE"
+  force_delete         = true
 
-    image_scanning_configuration {
-      scan_on_push = true
-    }
+  image_scanning_configuration {
+    scan_on_push = true
+  }
 }
